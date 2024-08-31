@@ -88,7 +88,7 @@ public class register {
                                 sJson.setStatus(200);
                                 sJson.setTimestamp(LocalDateTime.now());
                                 redisService.setValueWithExpiration(ip, "1", 4, TimeUnit.SECONDS);
-                                redisService.setValueWithExpiration(email, "1", 300, TimeUnit.SECONDS);
+                                redisService.setValueWithExpiration(email, "1", 2, TimeUnit.SECONDS);
                                 return sJson;
                             }
                         }

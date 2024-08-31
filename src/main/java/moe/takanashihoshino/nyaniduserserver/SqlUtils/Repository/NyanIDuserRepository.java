@@ -13,6 +13,12 @@ import java.io.Serializable;
 public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>, Serializable {
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO nyaniduser (uid, clientid, exp, hwid, nickname) VALUES (?1, null, 0, null, ?2)" , nativeQuery = true)
+    @Query(value = "INSERT INTO nyaniduser (uid, clientid, exp, hwid, nickname,BCookie) VALUES (?1, null, 0, null, ?2,null)" , nativeQuery = true)
     void CreateNyanID(String uid,String nickname);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update NyanIDuser set clientid = ?1,BCookie = ?2  where uid = ?3")
+    void UpdateNyanID(String clientid,String bcookie,String uid);
+
 }
