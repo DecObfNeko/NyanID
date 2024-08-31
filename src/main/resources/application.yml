@@ -75,6 +75,12 @@ NyanidSetting:
     214T1S1AF454654ge4r6
     4FEH4E498T32D4GSK43
   HOST: "http://nyanid.cn:8080" #前端域名,注册时候发给用户验证邮件需要使用,因为API服务器需要隐藏真实IP,后端会默认给链接后面加上/verification/,所以链接后面不需要带 /
+  qqbot:
+    isEnable: false
+    appid: "qqqqq"
+    token: "qqqqqqqq"
+    secret: "qqqqqqq"
+    isSandbox: true
 
 #Minecraft 外置登录服务器配置
 yggdrasil:

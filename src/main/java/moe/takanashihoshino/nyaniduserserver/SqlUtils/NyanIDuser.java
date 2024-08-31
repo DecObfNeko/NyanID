@@ -29,6 +29,9 @@ public class NyanIDuser implements Serializable {
     private String clientid;
 
     @Column
+    private String BCookie;
+
+    @Column
     private String nickname;
 
 

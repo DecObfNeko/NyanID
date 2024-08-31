@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 @SpringBootApplication
 public class NyanIdUserserverApplication {
     public static  Path configPath = Paths.get("config");
+
     public static void main(String[] args) throws IOException {
         Logger.getLogger("NyanID").info("[NyanID-UserServer] ["+ LocalDateTime.now() +"] ConfigPath: /config");
         Path languagePath = Paths.get("language");
