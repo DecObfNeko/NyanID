@@ -16,6 +16,9 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
+    @Value("${NyanidSetting.ContactEmail}")
+    private String contact;
+
     public void sendVerificationCode(String user, String code) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             String htmlBody = "<!DOCTYPE html>\n" +
@@ -50,7 +53,7 @@ public class EmailService {
                     "                    <div style=\"width:100%;margin:0 auto;\">\n" +
                     "                        <div style=\"padding:10px 10px 0;border-top:1px solid #ccc;color:#747474;margin-bottom:20px;line-height:1.3em;font-size:12px;\">\n" +
                     "                            <p>DecObfNeko Development Team</p>\n" +
-                    "                            <p>Contact us： neko@nyacat.cloud</p>\n" +
+                    "                            <p>Contact us： "+contact+"</p>\n" +
                     "                            <p>Please do not reply to this system email</p>\n" +
                     "                        </div>\n" +
                     "                    </div>\n" +
@@ -105,7 +108,7 @@ public class EmailService {
                     "                    <div style=\"width:100%;margin:0 auto;\">\n" +
                     "                        <div style=\"padding:10px 10px 0;border-top:1px solid #ccc;color:#747474;margin-bottom:20px;line-height:1.3em;font-size:12px;\">\n" +
                     "                            <p>DecObfNeko Development Team</p>\n" +
-                    "                            <p>Contact us： neko@nyacat.cloud<p>\n" +
+                    "                            <p>Contact us： "+contact+"<p>\n" +
                     "                            <p>Please do not reply to this system email</p>\n" +
                     "                        </div>\n" +
                     "                    </div>\n" +

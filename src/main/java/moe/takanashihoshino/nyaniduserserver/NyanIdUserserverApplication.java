@@ -19,10 +19,8 @@ public class NyanIdUserserverApplication {
 
     public static void main(String[] args) throws IOException {
         Logger.getLogger("NyanID").info("[NyanID-UserServer] ["+ LocalDateTime.now() +"] ConfigPath: /config");
-        Path languagePath = Paths.get("language");
         if (!Files.exists(configPath)) {
             Files.createDirectories(configPath);
-            Files.createDirectories(languagePath);
         }
         Resource resource = new ClassPathResource("application.yml");
         Path targetPath = configPath.resolve(Objects.requireNonNull(resource.getFilename()));
