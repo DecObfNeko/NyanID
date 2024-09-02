@@ -81,6 +81,7 @@ NyanidSetting:
     token: "qqqqqqqq"
     secret: "qqqqqqq"
     isSandbox: true
+  ContactEmail: "neko@nyacat.cloud" #邮箱,用户收到邮件Contact us的邮箱地址
 
 #Minecraft 外置登录服务器配置
 yggdrasil:

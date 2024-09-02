@@ -12,30 +12,26 @@ import java.io.Serializable;
 @Getter
 @Entity
 @Data
-public class NyanIDuser implements Serializable {
-
+public class OAuthApp implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition="varchar(150)",nullable = false)
-    private String uid;
+    private String Appid;
 
     @Column
-    private int exp;
+    private String CreateUser;
 
     @Column
-    private String hwid;
+    private String CallBackUrl;
 
     @Column
-    private String clientid;
+    private Boolean IsActive;
 
     @Column
-    private boolean IsDeveloper;
+    private String SecretKey;
 
     @Column
-    private String BCookie;
+    private String AppName;
 
     @Column
-    private String nickname;
-
-
+    private String AppDesc;
 }

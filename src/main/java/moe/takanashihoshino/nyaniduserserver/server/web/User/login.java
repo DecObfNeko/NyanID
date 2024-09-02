@@ -1,5 +1,5 @@
 package moe.takanashihoshino.nyaniduserserver.server.web.User;
-//登录
+
 
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,9 +40,7 @@ public class login {
 
     @Value("${NyanidSetting.encryptionKey}")
     private String encryptionKey;
-
     private final Map<String, login.Const> constMap = new HashMap<>();
-
     @PostMapping
     public Object PostMethod(@RequestBody JSONObject data, HttpServletResponse response, HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
         String email = data.getString("email");

@@ -13,7 +13,7 @@ import java.io.Serializable;
 public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>, Serializable {
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO nyaniduser (uid, clientid, exp, hwid, nickname,BCookie) VALUES (?1, null, 0, null, ?2,null)" , nativeQuery = true)
+    @Query(value = "INSERT INTO nyaniduser (uid, clientid,is_developer ,exp, hwid, nickname,BCookie) VALUES (?1, null,0, 0, null, ?2,null)" , nativeQuery = true)
     void CreateNyanID(String uid,String nickname);
 
     @Modifying
