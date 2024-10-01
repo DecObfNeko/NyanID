@@ -24,9 +24,14 @@ public interface AccountsRepository extends JpaRepository<Accounts, String>, Ser
     @Query(value = "SELECT uid FROM Accounts WHERE password = ?1")
     String findByPwd(String password);
 
-    @Query(value = "SELECT email FROM Accounts WHERE email = ?1")
+    @Query(value = "SELECT uid FROM Accounts WHERE email = ?1")
     String findByEmail(String email);
 
     @Query(value = "SELECT password FROM Accounts WHERE email = ?1")
     String LoginByEmail(String email);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update Accounts set password = ?2 where email = ?1")
+    void UpdatePassword(String email,String pwd);
 }

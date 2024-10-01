@@ -16,11 +16,17 @@ import java.util.logging.Logger;
 @SpringBootApplication
 public class NyanIdUserserverApplication {
     public static  Path configPath = Paths.get("config");
+    public static  Path DataPath = Paths.get("Data");
+    public static Path UserAvatar = Paths.get("Data/UserAvatar");
+    public static Path UserDataPath = Paths.get("Data/UserData");
 
     public static void main(String[] args) throws IOException {
         Logger.getLogger("NyanID").info("[NyanID-UserServer] ["+ LocalDateTime.now() +"] ConfigPath: /config");
-        if (!Files.exists(configPath)) {
+        if (!Files.exists(configPath) && !Files.exists(DataPath) && !Files.exists(UserAvatar) && !Files.exists(UserDataPath)) {
             Files.createDirectories(configPath);
+            Files.createDirectories(DataPath);
+            Files.createDirectories(UserAvatar);
+            Files.createDirectories(UserDataPath);
         }
         Resource resource = new ClassPathResource("application.yml");
         Path targetPath = configPath.resolve(Objects.requireNonNull(resource.getFilename()));

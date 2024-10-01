@@ -15,18 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("api/zako/v1/reg")
-public class register {
+@RequestMapping("api/zako/v1/register")
+public class RegisterApi {
 
     @Autowired
     private AccountsRepository accountsRepository;
@@ -46,6 +43,8 @@ public class register {
     @Value("${NyanidSetting.EnableUserRegister}")
     private boolean EnableUserRegister;
 
+    public String EventID = "RegEvent1";
+
     @PostMapping
     public Object RequestPost(@RequestBody JSONObject jsonObject, HttpServletResponse response,HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
         if (EnableUserRegister) {
@@ -54,13 +53,15 @@ public class register {
             String email = jsonObject.getString("e");
             String ip = jsonObject.getString("p");
             if (username != null | password != null | email != null | ip != null) {
+                JSONObject Event = new JSONObject();
+                Event.put(EventID,email);
                 if (!Objects.equals(ip, request.getLocalAddr())) {
                     redisService.setValueWithExpiration(ip, "1", 600, TimeUnit.SECONDS);
                     redisService.setValueWithExpiration(request.getLocalAddr(), "1", 600, TimeUnit.SECONDS);
                     return ErrRes.Dimples1337Exception("我去你IP怎么对不上喵?", response);
                 } else {//
                     if (accountsRepository.findByEmail(email) == null) {
-                        if (redisService.getValue(email) == null) {
+                        if (redisService.getValue(String.valueOf(Event)) == null) {
                             if (!email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")) {
                                 return ErrRes.IllegalRequestException("邮箱格式错误喵~", response);
                             } else {
@@ -75,11 +76,7 @@ public class register {
 //                                int serverPort = request.getServerPort();
 //                                String baseURL = scheme + "://" + serverName + (serverPort != 80 && serverPort != 443 ? ":" + serverPort : "");
                                     // HmacSHA256加密Password
-                                    Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-                                    SecretKeySpec secret_key = new SecretKeySpec(encryptionKey.getBytes(), "HmacSHA256");
-                                    sha256_HMAC.init(secret_key);
-                                    byte[] hash = sha256_HMAC.doFinal(password.getBytes());
-                                    String lockpwd = Base64.getEncoder().encodeToString(hash);
+                                    String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
                                     emailService.RegisterVerification(email, HOST + "/verification/" + VerificationCode);
                                     JSONObject json = new JSONObject();
                                     json.put("uid", uid);
@@ -92,7 +89,6 @@ public class register {
                                     sJson.setStatus(200);
                                     sJson.setTimestamp(LocalDateTime.now());
                                     redisService.setValueWithExpiration(ip, "1", 4, TimeUnit.SECONDS);
-                                    redisService.setValueWithExpiration(email, "1", 2, TimeUnit.SECONDS);
                                     return sJson;
                                 }
                             }

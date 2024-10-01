@@ -15,23 +15,22 @@ import java.io.Serializable;
 public class OAuthApp implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String Appid;
 
-    @Column
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String CreateUser;
 
-    @Column
     private String CallBackUrl;
 
-    @Column
+    @Column(nullable = false)
     private Boolean IsActive;
 
-    @Column
     private String SecretKey;
 
-    @Column
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String AppName;
 
-    @Column
+    @Column(columnDefinition="text")
     private String AppDesc;
 }

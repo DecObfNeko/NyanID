@@ -7,10 +7,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
     @Autowired
     private IPSecurityDetection ipSecurityDetection;
+
+    @Autowired
+    private AuthenticateCheck authenticateCheck;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(ipSecurityDetection).addPathPatterns("/authserver/**").addPathPatterns("/api/zako/**");
+        registry.addInterceptor(authenticateCheck).addPathPatterns("/api/zako/v1/userdata").addPathPatterns("/api/zako/v1/userinfo");
     }
 }
