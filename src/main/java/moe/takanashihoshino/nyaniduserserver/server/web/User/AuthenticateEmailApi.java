@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 //邮箱验证
 @RestController
 @RequestMapping("api/zako/v1/verification")
-public class AuthenticateEmail {
+public class AuthenticateEmailApi {
 
     @Autowired
     private NyanIDuserRepository nyanIDuserRepository;
@@ -60,5 +60,6 @@ public class AuthenticateEmail {
             return ErrRes.IllegalRequestException("参数错误",response);
         }
     }
+
 
 }

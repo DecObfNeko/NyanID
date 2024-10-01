@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -27,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("api/zako/v1/login")
-public class login {
+public class LoginApi {
 
     @Autowired
     private RedisService redisService;
@@ -40,13 +38,17 @@ public class login {
 
     @Value("${NyanidSetting.encryptionKey}")
     private String encryptionKey;
-    private final Map<String, login.Const> constMap = new HashMap<>();
-    @PostMapping
+    private final Map<String, LoginApi.Const> constMap = new HashMap<>();
+
+    public  String EventID = "LoEvent1";
+    @PostMapping()
     public Object PostMethod(@RequestBody JSONObject data, HttpServletResponse response, HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
         String email = data.getString("email");
         String password = data.getString("pwd");
         String ip = data.getString("p");
-        if (email != null | password != null | ip != null){
+        if (email != null && password != null && ip != null){
+            JSONObject BanEvent = new JSONObject();
+            BanEvent.put(EventID, email);
             if (!Objects.equals(ip, request.getLocalAddr())){
                 redisService.setValueWithExpiration(ip, "1", 600, TimeUnit.SECONDS);
                 redisService.setValueWithExpiration(request.getLocalAddr(), "1", 600, TimeUnit.SECONDS);
@@ -56,24 +58,20 @@ public class login {
                     return ErrRes.IllegalRequestException("邮箱格式错误喵~", response);
                 } else {
                     if (accountsRepository.findByEmail(email) != null) {
-                        if (redisService.getValue(email) != null) {
+                        if (redisService.getValue(String.valueOf(BanEvent)) != null) {
                             return ErrRes.NotFoundAccountException("账号不存在或因为密码错误次数过多锁定喵~", response);
                         } else {
                             if (constMap.get(email) == null) {
                                 constMap.put(email, new Const(1));
                             } else if (constMap.get(email).requestCount > 3) {
                                 constMap.remove(email);
-                                redisService.setValueWithExpiration(email, "1", 180, TimeUnit.SECONDS);
+                                redisService.setValueWithExpiration(String.valueOf(BanEvent), "1", 180, TimeUnit.SECONDS);
                             }
                             String pwd = accountsRepository.LoginByEmail(email);
-                            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-                            SecretKeySpec secret_key = new SecretKeySpec(encryptionKey.getBytes(), "HmacSHA256");
-                            sha256_HMAC.init(secret_key);
-                            byte[] hash = sha256_HMAC.doFinal(password.getBytes());
-                            String lockpwd = Base64.getEncoder().encodeToString(hash);
+                            String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
                             if (Objects.equals(lockpwd, pwd)) {
-                                String token = OtherUtils.RandomString(128);
-                                String cookie = OtherUtils.RandomString(64);
+                                String cookie = OtherUtils.RandomString(128);
+                                String token = OtherUtils.RandomString(64);
                                 String uid = accountsRepository.findByPwd(lockpwd);
                                 nyanIDuserRepository.UpdateNyanID(token, cookie, uid);
                                 if (constMap.get(email) != null) {

@@ -16,7 +16,7 @@ public class Accounts implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition="varchar(150)")
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String uid;
 
     @Column

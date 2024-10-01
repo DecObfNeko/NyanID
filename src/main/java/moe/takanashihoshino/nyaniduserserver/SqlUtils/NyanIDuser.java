@@ -28,7 +28,6 @@ public class NyanIDuser implements Serializable {
     @Column
     private String clientid;
 
-    @Column
     private boolean IsDeveloper;
 
     @Column

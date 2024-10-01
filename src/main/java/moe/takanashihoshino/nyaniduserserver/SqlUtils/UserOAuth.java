@@ -14,14 +14,15 @@ import java.io.Serializable;
 public class UserOAuth  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String Appid;
 
-    @Column
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String ClientID;
 
-    @Column
-    private String IsActive;
+    @Column(nullable = false)
+    private Boolean IsActive;
 
-    @Column
+    @Column(columnDefinition="varchar(150)",nullable = false)
     private String NyanUID;
 }
