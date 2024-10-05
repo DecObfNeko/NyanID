@@ -8,10 +8,11 @@ import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrRes;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.Error;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrorCode;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.SJson;
+import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.NyanIDuserRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,17 +21,56 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/zako/v1/userdata")
 public class UserDataApi {
-    @PostMapping
-    public Object PostMethod(){
-        return "asdPostMethod";
-    }
 
     @Autowired
     private NyanIDuserRepository nyanIDuserRepository;
+    @Autowired
+    private AccountsRepository accountsRepository;
+    @Autowired
+    private EmailService emailService;
+
+
+    @PostMapping(produces = "application/json")
+    public <T> Object PostMethod(@RequestBody(required = false) T data, HttpServletResponse response, HttpServletRequest request){
+        String Authorization = request.getHeader("Authorization");
+        String Token = Authorization.replace("Bearer ", "").replace(" ", "");
+        String uid = nyanIDuserRepository.getAccount(Token);
+        if (data != null){
+           JSONObject a = JSONObject.parseObject(JSONObject.toJSONString(data));
+           String Action = a.getString("action");
+        switch (Action){
+                        case "0" :{//设置昵称
+                            String NICKNAME = a.getString("nickname");
+                            if (NICKNAME != null && NICKNAME.length() > 2){
+                                if (!Objects.equals(nyanIDuserRepository.getNickname(uid), NICKNAME)){
+                                    nyanIDuserRepository.UpdateNickname(NICKNAME,uid);
+                                    response.setStatus(200);
+                                    return success("Setting nickname success MiaoWu~",200);
+                                }else return ErrRes.IllegalRequestException("The nickname is the same as in the server  MiaoWu~",response);
+                            }else return ErrRes.IllegalRequestException("nickname is invalid  MiaoWu~",response);
+                        }
+                        case "1" :{//更改用户名
+                            String username = a.getString("username");
+                            if (username != null && username.length() > 5 && username.matches(".*[A-Za-z0-9]")) {
+                                if (accountsRepository.findByUsername(username) == null){
+                                    accountsRepository.UpdateUsername(username,uid);
+                                    emailService.NotificationEmail(accountsRepository.GetEmailByUid(uid),request.getRemoteAddr(),"Change username",uid);
+                                    return success("Setting username success MiaoWu~",200);
+                                }else return ErrRes.IllegalRequestException("username is already exist  MiaoWu~",response);
+                            }else return ErrRes.IllegalRequestException("username is invalid  MiaoWu~",response);
+                        }
+
+            default:
+                return ErrRes.IllegalRequestException("RequestBody action is invalid  MiaoWu~",response);
+         }
+        }else return ErrRes.IllegalRequestException("RequestBody  is NULL  MiaoWu~",response);
+    }
+
 
     @PutMapping(produces = "application/json")
     public <T> Object PutMethod(@RequestParam(value = "avatar", required = false) T avatar, HttpServletRequest request , HttpServletResponse response) throws IOException {
@@ -73,44 +113,19 @@ public class UserDataApi {
             originalFile.delete();
             OtherUtils.reduceImageByRatio(avatar.getInputStream(), UserAvatar,uid,10, 10);
         }else {
-            System.out.println(false);
+            //System.out.println(false);
             OtherUtils.reduceImageByRatio(avatar.getInputStream(), UserAvatar,uid,10, 10);
-            //originalFile.delete();
         }
+//        String newavatarMD5 = DigestUtils.md5DigestAsHex(avatar.getBytes());
+//        System.out.println(newavatarMD5);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-        String newavatarMD5 = DigestUtils.md5DigestAsHex(avatar.getBytes());
-        System.out.println(newavatarMD5);
-
-//        InputStream a = avatar.getInputStream();
-//        BufferedImage imag = ImageIO.read(a);
-//        a.close();
-
-
-
-
-//        avatar.getSize();
-//        InputStream is = avatar.getInputStream();
-//        BufferedImage imag = ImageIO.read(is);
-//        System.out.println(imag.getWidth());
-//        System.out.println(imag.getHeight());
-//        System.out.println(imag.getColorModel().getPixelSize());
-//        System.out.println(imag.getColorModel().getTransferType());
-//        System.out.println(imag.getColorModel().getTransparency());
-//        System.out.println(Arrays.toString(imag.getColorModel().getComponentSize()));
-//        System.out.println(imag.getColorModel().getNumColorComponents());
-//        ImageIO.write(imag, "png", new File(UserAvatar + uid + ".png"));
-//        is.close();
+    public static SJson success(String message,int code){
+        SJson sJson = new SJson();
+        sJson.setMessage(message);
+        sJson.setStatus(code);
+        sJson.setTimestamp(LocalDateTime.now());
+        return sJson;
     }
 
 

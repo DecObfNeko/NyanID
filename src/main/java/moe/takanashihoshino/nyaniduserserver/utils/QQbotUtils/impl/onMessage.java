@@ -31,14 +31,22 @@ public class onMessage extends ListenerHost {
     public void onEvent(MessageEvent event) {
      RawMessage message = event.getRawMessage();
         String[] processedData = processString(String.valueOf(message));
-      if (Arrays.toString(processedData).isEmpty()){
-          event.send("请输入内容");
-      }else {
-          MessageAsyncBuilder builder = new MessageAsyncBuilder()
-                  .text("你好")
-                  .image("https://www.runoob.com/wp-content/uploads/2013/06/image-icon.png")
+        List<?> arrays = List.of(Arrays.stream(processedData).toArray());
+        System.out.println(String.valueOf(arrays.get(3)).replaceAll("content=","").replaceAll(",",""));
+        if (String.valueOf(arrays.get(3)).replaceAll("content=","").replaceAll(",","").equals("help")){
+            MessageAsyncBuilder builder = new MessageAsyncBuilder()
+                  .text("你好，我是nyanidbot，你可以发送help来获取帮助")
                   .append(message.getContent());
-          event.send(builder.build() );
-      }
+            event.send(builder.build());
+        }
+
+//      if (Arrays.toString(processedData).isEmpty()){
+//          event.send("请输入内容");
+//      }else {
+//          MessageAsyncBuilder builder = new MessageAsyncBuilder()
+//                  .text("你好")
+//                  .append(message.getContent());
+//          event.send(builder.build() );
+//      }
     }
 }

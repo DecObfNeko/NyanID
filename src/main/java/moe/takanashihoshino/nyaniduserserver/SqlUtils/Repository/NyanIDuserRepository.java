@@ -25,6 +25,16 @@ public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>,
     @Query(value = "SELECT clientid FROM NyanIDuser where uid = ?1")
     String getClienID(String uid);
 
+    @Query(value = "SELECT nickname FROM NyanIDuser where uid = ?1")
+    String getNickname(String uid);
+
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "update NyanIDuser set nickname = ?1  where uid = ?2")
+    void UpdateNickname(String nickname,String uid);
+
 
     @Modifying
     @Transactional

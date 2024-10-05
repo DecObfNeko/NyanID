@@ -40,30 +40,33 @@ private String encryptionKey;
 
 
 @PostMapping(produces = "application/json")
-public Object VerifyCode(@RequestBody JSONObject jsonObject, HttpServletResponse response, HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
-        String email = jsonObject.getString("email");
-        String code = jsonObject.getString("code");
-        String newpwd = jsonObject.getString("password");
-        String ip = request.getRemoteAddr();
-        if (email != null && code != null){
-            if (email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")){
-                if (redisService.getValue(code) != null){
-                    redisService.deleteValue(code);
-                    String pwd = OtherUtils.HMACSHA256(encryptionKey,newpwd);
-                    String uid = accountsRepository.findByEmail(email);
-                    accountsRepository.UpdatePassword(email,pwd);
-                    emailService.NotificationEmail(email,ip,"修改密码",uid);
-                    SJson sJson = new SJson();
-                    sJson.setMessage("密码修改成功");
-                    sJson.setStatus(200);
-                    sJson.setTimestamp(LocalDateTime.now());
-                    return sJson;
-                }else return ErrRes.IllegalClientException("验证码错误或已过期", response);
-            }else return ErrRes.IllegalRequestException("邮箱格式错误", response);
+public <T> Object VerifyCode(@RequestBody(required = false) T data, HttpServletResponse response, HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
+        if (data != null){
+            JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(data));
+            String email = jsonObject.getString("email");
+            String code = jsonObject.getString("code");
+            String newpwd = jsonObject.getString("password");
+            String ip = request.getRemoteAddr();
+            if (email != null && code != null){
+                if (email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")){
+                    if (redisService.getValue(code) != null){
+                        redisService.deleteValue(code);
+                        String pwd = OtherUtils.HMACSHA256(encryptionKey,newpwd);
+                        String uid = accountsRepository.findByEmail(email);
+                        accountsRepository.UpdatePassword(email,pwd);
+                        emailService.NotificationEmail(email,ip,"修改密码",uid);
+                        SJson sJson = new SJson();
+                        sJson.setMessage("密码修改成功");
+                        sJson.setStatus(200);
+                        sJson.setTimestamp(LocalDateTime.now());
+                        return sJson;
+                    }else return ErrRes.IllegalClientException("验证码错误或已过期", response);
+                }else return ErrRes.IllegalRequestException("邮箱格式错误", response);
+            }else return ErrRes.IllegalRequestException("参数错误", response);
         }else return ErrRes.IllegalRequestException("参数错误", response);
     }
 @GetMapping
-public Object GetAuthenticateEmail(@RequestParam("email") String email, HttpServletResponse response){
+public Object GetAuthenticateEmail(@RequestParam(value = "email",required = false) String email, HttpServletResponse response){
     if (email != null){
         if (email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")) {
             JSONObject jsonObject = new JSONObject();

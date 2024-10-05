@@ -46,62 +46,65 @@ public class RegisterApi {
     public String EventID = "RegEvent1";
 
     @PostMapping
-    public Object RequestPost(@RequestBody JSONObject jsonObject, HttpServletResponse response,HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
+    public <T> Object RequestPost(@RequestBody(required = false) T data, HttpServletResponse response,HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
         if (EnableUserRegister) {
-            String username = jsonObject.getString("uname");
-            String password = jsonObject.getString("pwd");
-            String email = jsonObject.getString("e");
-            String ip = jsonObject.getString("p");
-            if (username != null | password != null | email != null | ip != null) {
-                JSONObject Event = new JSONObject();
-                Event.put(EventID,email);
-                if (!Objects.equals(ip, request.getLocalAddr())) {
-                    redisService.setValueWithExpiration(ip, "1", 600, TimeUnit.SECONDS);
-                    redisService.setValueWithExpiration(request.getLocalAddr(), "1", 600, TimeUnit.SECONDS);
-                    return ErrRes.Dimples1337Exception("我去你IP怎么对不上喵?", response);
-                } else {//
-                    if (accountsRepository.findByEmail(email) == null) {
-                        if (redisService.getValue(String.valueOf(Event)) == null) {
-                            if (!email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")) {
-                                return ErrRes.IllegalRequestException("邮箱格式错误喵~", response);
-                            } else {
-                                if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$") | password.length() < 7) {
-                                    return ErrRes.IllegalRequestException("您的密码至少包含一个大写字母(A-Z),包含一个小写字母(a-z),包含一个数字(0-9),包含一个特殊字符,且长度至少为 8 个字符喵~", response);
+            if (data != null){
+                JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(data));
+                String username = jsonObject.getString("uname");
+                String password = jsonObject.getString("pwd");
+                String email = jsonObject.getString("e");
+                String ip = jsonObject.getString("p");
+                if (username != null | password != null | email != null | ip != null) {
+                    JSONObject Event = new JSONObject();
+                    Event.put(EventID,email);
+                    if (!Objects.equals(ip, request.getLocalAddr())) {
+                        redisService.setValueWithExpiration(ip, "1", 600, TimeUnit.SECONDS);
+                        redisService.setValueWithExpiration(request.getLocalAddr(), "1", 600, TimeUnit.SECONDS);
+                        return ErrRes.Dimples1337Exception("我去你IP怎么对不上喵?", response);
+                    } else {//
+                        if (accountsRepository.findByEmail(email) == null) {
+                            if (redisService.getValue(String.valueOf(Event)) == null) {
+                                if (!email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")) {
+                                    return ErrRes.IllegalRequestException("邮箱格式错误喵~", response);
                                 } else {
-                                    String key = OtherUtils.RandomString(8);
-                                    String uid = UUIDHelper.generateNyanIDUUID(key, email).replaceAll("-", "");
-                                    String VerificationCode = OtherUtils.RandomString(128);
+                                    if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$") | password.length() < 7) {
+                                        return ErrRes.IllegalRequestException("您的密码至少包含一个大写字母(A-Z),包含一个小写字母(a-z),包含一个数字(0-9),包含一个特殊字符,且长度至少为 8 个字符喵~", response);
+                                    } else {
+                                        String key = OtherUtils.RandomString(8);
+                                        String uid = UUIDHelper.generateNyanIDUUID(key, email).replaceAll("-", "");
+                                        String VerificationCode = OtherUtils.RandomString(128);
 //                                String scheme = request.getScheme();
 //                                String serverName = request.getServerName();
 //                                int serverPort = request.getServerPort();
 //                                String baseURL = scheme + "://" + serverName + (serverPort != 80 && serverPort != 443 ? ":" + serverPort : "");
-                                    // HmacSHA256加密Password
-                                    String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
-                                    emailService.RegisterVerification(email, HOST + "/verification/" + VerificationCode);
-                                    JSONObject json = new JSONObject();
-                                    json.put("uid", uid);
-                                    json.put("email", email);
-                                    json.put("username", username);
-                                    json.put("password", lockpwd);
-                                    redisService.setValueWithExpiration(VerificationCode, json, 300, TimeUnit.SECONDS);
-                                    SJson sJson = new SJson();
-                                    sJson.setMessage("请前往邮箱验证然后完成注册,注意,链接有效期只有5分钟,请尽快验证喵!");
-                                    sJson.setStatus(200);
-                                    sJson.setTimestamp(LocalDateTime.now());
-                                    redisService.setValueWithExpiration(ip, "1", 4, TimeUnit.SECONDS);
-                                    return sJson;
+                                        // HmacSHA256加密Password
+                                        String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
+                                        emailService.RegisterVerification(email, HOST + "/verification/" + VerificationCode);
+                                        JSONObject json = new JSONObject();
+                                        json.put("uid", uid);
+                                        json.put("email", email);
+                                        json.put("username", username);
+                                        json.put("password", lockpwd);
+                                        redisService.setValueWithExpiration(VerificationCode, json, 300, TimeUnit.SECONDS);
+                                        SJson sJson = new SJson();
+                                        sJson.setMessage("请前往邮箱验证然后完成注册,注意,链接有效期只有5分钟,请尽快验证喵!");
+                                        sJson.setStatus(200);
+                                        sJson.setTimestamp(LocalDateTime.now());
+                                        redisService.setValueWithExpiration(ip, "1", 4, TimeUnit.SECONDS);
+                                        return sJson;
+                                    }
                                 }
+                            } else {
+                                return ErrRes.IllegalRequestException("邮箱已被注册或限制注册喵~", response);
                             }
                         } else {
                             return ErrRes.IllegalRequestException("邮箱已被注册或限制注册喵~", response);
                         }
-                    } else {
-                        return ErrRes.IllegalRequestException("邮箱已被注册或限制注册喵~", response);
                     }
+                } else {
+                    return ErrRes.IllegalRequestException("参数错误", response);
                 }
-            } else {
-                return ErrRes.IllegalRequestException("参数错误", response);
-            }
+            }else return ErrRes.IllegalRequestException("参数错误喵~", response);
         }else {
             return ErrRes.IllegalRequestException("服务器未开启用户注册功能喵~", response);
         }
