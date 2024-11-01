@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.Error;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrorCode;
 import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.NyanIDuserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,9 @@ public class AuthenticateCheck implements HandlerInterceptor {
     private NyanIDuserRepository nyanIDuserRepository;
 
     @Autowired
+    private AccountsRepository accountsRepository;
+
+    @Autowired
     private RedisService redisService;
 
     private String EventID = "Se1";
@@ -41,46 +45,51 @@ public class AuthenticateCheck implements HandlerInterceptor {
             if (nyanIDuserRepository.getAccount(Token) != null){
                 String uid = nyanIDuserRepository.getAccount(Token);
                 String ClientID =nyanIDuserRepository.getClienID(uid);
-                switch (getEvent){
-                    case "Ua" ://上传头像 PUT
-                        if (Objects.equals(RequestMode, "PUT")){
-                            if (!CheckSession(uid)) {
-                                addSession(session, uid, ClientID, ip);
+                if (!accountsRepository.isBanned(uid)) {
+                    switch (getEvent) {
+                        case "Ua"://上传头像 PUT
+                            if (Objects.equals(RequestMode, "PUT")) {
+                                if (!CheckSession(uid)) {
+                                    addSession(session, uid, ClientID, ip);
+                                    break;
+                                }
                                 break;
+                            } else {
+                                PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
+                                return false;
                             }
-                            break;
-                        }else {
-                            PrintWriter(response,Err(ErrorCode.IllegalRequest.getCode(),ErrorCode.IllegalRequest.getMessage(),"Zako~Wrong action event MiaoWu~"),403);
-                            return false;
-                        }
-                    case "Ud" ://上传数据 POST
-                        if (Objects.equals(RequestMode, "POST")){
-                            if (!CheckSession(uid)) {
-                                addSession(session, uid, ClientID, ip);
+                        case "Ud"://上传数据 POST
+                            if (Objects.equals(RequestMode, "POST")) {
+                                if (!CheckSession(uid)) {
+                                    addSession(session, uid, ClientID, ip);
+                                    break;
+                                }
                                 break;
+                            } else {
+                                PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
+                                return false;
                             }
-                            break;
-                        }else {
-                            PrintWriter(response,Err(ErrorCode.IllegalRequest.getCode(),ErrorCode.IllegalRequest.getMessage(),"Zako~Wrong action event MiaoWu~"),403);
-                            return false;
-                        }
-                    case "Gi" ://获取信息 GET
-                        if (Objects.equals(RequestMode, "GET")){
-                            if (!CheckSession(uid)) {
-                                addSession(session, uid, ClientID, ip);
+                        case "Gi"://获取信息 GET
+                            if (Objects.equals(RequestMode, "GET")) {
+                                if (!CheckSession(uid)) {
+                                    addSession(session, uid, ClientID, ip);
+                                    break;
+                                }
                                 break;
+                            } else {
+                                PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
+                                return false;
                             }
-                            break;
-                        }else {
-                            PrintWriter(response,Err(ErrorCode.IllegalRequest.getCode(),ErrorCode.IllegalRequest.getMessage(),"Zako~Wrong action event MiaoWu~"),403);
-                            return false;
-                        }
 
 
-                    default:
-                        PrintWriter(response,Err(ErrorCode.IllegalRequest.getCode(),ErrorCode.IllegalRequest.getMessage(),"Zako~Unknown action parameters MiaoWu~"),403);
-                        return false;
-                     }
+                        default:
+                            PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Unknown action parameters MiaoWu~"), 403);
+                            return false;
+                    }
+                }else {
+                    PrintWriter(response,Err(ErrorCode.Unauthorized.getCode(),ErrorCode.Unauthorized.getMessage(),"Zako~account is banned for admin MiaoWu~ "),401);
+                    return false;
+                }
                      return true;
             }else {
                 PrintWriter(response,Err(ErrorCode.Unauthorized.getCode(),ErrorCode.Unauthorized.getMessage(),"Zako~Authentication failed, invalid token MiaoWu~ "),401);

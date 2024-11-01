@@ -12,12 +12,6 @@ import java.io.Serializable;
 @Repository
 public interface AccountsRepository extends JpaRepository<Accounts, String>, Serializable {
 
-    @Transactional
-    @Modifying
-    @Query(value = "INSERT INTO accounts (uid, bind, email, is_banned, is_active, password, username) VALUES (?1, null, ?2, false, true, ?3, ?4)" , nativeQuery = true)
-    void CreateNewAccount(String uid,String email,String password,String username);
-
-
     @Query(value = "SELECT uid FROM Accounts WHERE uid = ?1")
     String findByUid(String uid);
 
@@ -35,6 +29,15 @@ public interface AccountsRepository extends JpaRepository<Accounts, String>, Ser
 
     @Query(value = "SELECT password FROM Accounts WHERE email = ?1")
     String LoginByEmail(String email);
+
+    @Query(value = "SELECT isBanned from Accounts WHERE uid = ?1")
+    Boolean isBanned(String uid);
+
+    @Query(value = "SELECT COUNT(*) AS nums FROM Accounts ")
+    String GetAllUser();
+
+    @Query(value = "SELECT COUNT(*) AS nums FROM Accounts where isBanned = true ")
+    String GetAllBannedUser();
 
     @Modifying
     @Transactional

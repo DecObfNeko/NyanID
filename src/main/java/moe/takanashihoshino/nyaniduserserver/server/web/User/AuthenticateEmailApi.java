@@ -6,8 +6,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrRes;
 import moe.takanashihoshino.nyaniduserserver.ErrUtils.SJson;
 import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.SqlUtils.Accounts;
+import moe.takanashihoshino.nyaniduserserver.SqlUtils.NyanIDuser;
 import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.NyanIDuserRepository;
+import moe.takanashihoshino.nyaniduserserver.SqlUtils.Service.NyanidUserService;
+import moe.takanashihoshino.nyaniduserserver.SqlUtils.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,18 +25,18 @@ import java.time.LocalDateTime;
 public class AuthenticateEmailApi {
 
     @Autowired
-    private NyanIDuserRepository nyanIDuserRepository;
-
-    @Autowired
-    private AccountsRepository accountsRepository;
-
-    @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private NyanidUserService nyanidUserService;
 
 
     @GetMapping
     public Object GetMethod(HttpServletResponse response) {
-        return ErrRes.IllegalClientException("该接口不支持Get请求喵~",response);
+        return ErrRes.IllegalClientException("This API does not support GET requests 杂鱼喵~",response);
     }
 
     @PostMapping
@@ -47,21 +51,38 @@ public class AuthenticateEmailApi {
                     String password =data.getString("password");
                     String username =data.getString("username");
                     String email =data.getString("email");
-                    accountsRepository.CreateNewAccount(uid,email,password,username);
-                    nyanIDuserRepository.CreateNyanID(uid,"还没想好取啥名字的新猫猫");
+                    Accounts accounts = new Accounts();
+                    accounts.setUid(uid);
+                    accounts.setEmail(email);
+                    accounts.setIsBanned(false);
+                    accounts.setPassword(password);
+                    accounts.setUsername(username);
+                    accounts.setBind("");
+                    accounts.setSecretKey("");
+                    accounts.setIsActive(true);
+                    userService.save(accounts);
+                    NyanIDuser nyanIDuser = new NyanIDuser();
+                    nyanIDuser.setUid(uid);
+                    nyanIDuser.setClientid("");
+                    nyanIDuser.setBCookie("");
+                    nyanIDuser.setHwid("");
+                    nyanIDuser.setNickname("还没想好取啥名字的新猫猫");
+                    nyanIDuser.setExp(0);
+                    nyanIDuser.setIsDeveloper(false);
+                    nyanidUserService.save(nyanIDuser);
                     redisService.deleteValue(code);
                     SJson sJson = new SJson();
                     sJson.setStatus(200);
-                    sJson.setMessage("验证成功,请前往登录喵~");
+                    sJson.setMessage("The verification is successful, please go to Login 杂鱼喵~");
                     sJson.setTimestamp(LocalDateTime.now());
                     return sJson;
                 }else {
-                    return ErrRes.IllegalRequestException("验证码错误或失效",response);
+                    return ErrRes.IllegalRequestException("The verification code is incorrect or invalid 杂鱼喵~",response);
                 }
             }else {
-                return ErrRes.IllegalRequestException("参数错误",response);
+                return ErrRes.IllegalRequestException("The parameter is incorrect 杂鱼喵~",response);
             }
-        }else return ErrRes.IllegalClientException("参数错误",response);
+        }else return ErrRes.IllegalClientException("The parameter is incorrect 杂鱼喵~",response);
 
     }
 }

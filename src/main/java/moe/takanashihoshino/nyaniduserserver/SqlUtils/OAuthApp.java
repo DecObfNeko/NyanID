@@ -14,7 +14,6 @@ import java.io.Serializable;
 @Data
 public class OAuthApp implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition="varchar(150)",nullable = false)
     private String Appid;
 

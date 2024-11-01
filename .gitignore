@@ -2,5 +2,6 @@
 /target
 /.idea
 /config
-/language
+/Data
+/redis
 

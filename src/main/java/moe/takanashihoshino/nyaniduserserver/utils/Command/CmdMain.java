@@ -20,6 +20,8 @@ public class CmdMain {
     @Autowired
     private RedisCommand redisCommand;
 
+
+
     @Value("${NyanidSetting.EnableCommand}")
     private boolean EnableCommand;
 

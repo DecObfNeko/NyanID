@@ -18,6 +18,7 @@ public class EmailService {
 
     @Value("${NyanidSetting.ContactEmail}")
     private String contact;
+
     @Value("${NyanidSetting.TeamName}")
     private String teamName;
 
@@ -103,7 +104,6 @@ public class EmailService {
                     "                        </font>\n" +
                     "                    </h2>\n" +
                     "                    <p>您好喵,非常感谢您注册使用NyanID,点击链接确认注册:)<a href=\""+link+"\">确认注册</a>\n" +
-                    "                       <p><font color=\\\"#ff8c00\\\">\"+ code+\"</font></p>"+
                     "                    <div style=\"width:100%;margin:0 auto;\">\n" +
                     "                        <div style=\"padding:10px 10px 0;border-top:1px solid #ccc;color:#747474;margin-bottom:20px;line-height:1.3em;font-size:12px;\">\n" +
                     "                            <p>"+teamName+"</p>\n" +

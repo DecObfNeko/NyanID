@@ -5,13 +5,14 @@
 - 使用SpringBoot
 
 ### DEV RUN:
-Run ` NyanIdUserserverApplication`
+ReRun ` NyanIdUserserverApplication`
 
 ### Maven Plugins Download:
 Run ` NyanID-userserver [verify]`
 
 ### BUILD RUN:
 Run `NyanID-Package`  <--记得关闭360
-
+### Redis RUN:
+Run `start`
 
 

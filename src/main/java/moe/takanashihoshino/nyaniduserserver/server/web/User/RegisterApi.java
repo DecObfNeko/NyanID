@@ -53,15 +53,9 @@ public class RegisterApi {
                 String username = jsonObject.getString("uname");
                 String password = jsonObject.getString("pwd");
                 String email = jsonObject.getString("e");
-                String ip = jsonObject.getString("p");
-                if (username != null | password != null | email != null | ip != null) {
+                if (username != null | password != null | email != null) {
                     JSONObject Event = new JSONObject();
                     Event.put(EventID,email);
-                    if (!Objects.equals(ip, request.getLocalAddr())) {
-                        redisService.setValueWithExpiration(ip, "1", 600, TimeUnit.SECONDS);
-                        redisService.setValueWithExpiration(request.getLocalAddr(), "1", 600, TimeUnit.SECONDS);
-                        return ErrRes.Dimples1337Exception("我去你IP怎么对不上喵?", response);
-                    } else {//
                         if (accountsRepository.findByEmail(email) == null) {
                             if (redisService.getValue(String.valueOf(Event)) == null) {
                                 if (!email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")) {
@@ -90,7 +84,6 @@ public class RegisterApi {
                                         sJson.setMessage("请前往邮箱验证然后完成注册,注意,链接有效期只有5分钟,请尽快验证喵!");
                                         sJson.setStatus(200);
                                         sJson.setTimestamp(LocalDateTime.now());
-                                        redisService.setValueWithExpiration(ip, "1", 4, TimeUnit.SECONDS);
                                         return sJson;
                                     }
                                 }
@@ -100,7 +93,7 @@ public class RegisterApi {
                         } else {
                             return ErrRes.IllegalRequestException("邮箱已被注册或限制注册喵~", response);
                         }
-                    }
+
                 } else {
                     return ErrRes.IllegalRequestException("参数错误", response);
                 }

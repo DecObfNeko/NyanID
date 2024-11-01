@@ -13,7 +13,6 @@ import java.io.Serializable;
 @Data
 public class UserOAuth  implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition="varchar(150)",nullable = false)
     private String Appid;
 
