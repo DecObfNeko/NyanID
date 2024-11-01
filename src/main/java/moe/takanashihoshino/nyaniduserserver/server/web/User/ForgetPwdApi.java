@@ -56,7 +56,7 @@ public <T> Object VerifyCode(@RequestBody(required = false) T data, HttpServletR
                         accountsRepository.UpdatePassword(email,pwd);
                         emailService.NotificationEmail(email,ip,"修改密码",uid);
                         SJson sJson = new SJson();
-                        sJson.setMessage("密码修改成功");
+                        sJson.setMessage("The password was successfully changed 杂鱼喵~");
                         sJson.setStatus(200);
                         sJson.setTimestamp(LocalDateTime.now());
                         return sJson;

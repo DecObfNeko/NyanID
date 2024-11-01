@@ -30,6 +30,7 @@ public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>,
 
 
 
+
     @Modifying
     @Transactional
     @Query(value = "update NyanIDuser set nickname = ?1  where uid = ?2")

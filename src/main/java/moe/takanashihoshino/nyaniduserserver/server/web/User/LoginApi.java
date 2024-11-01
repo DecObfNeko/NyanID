@@ -54,14 +54,14 @@ public class LoginApi {
                 if (!Objects.equals(ip, request.getLocalAddr())){
                     redisService.setValueWithExpiration(ip, "1", 600, TimeUnit.SECONDS);
                     redisService.setValueWithExpiration(request.getLocalAddr(), "1", 600, TimeUnit.SECONDS);
-                    return ErrRes.Dimples1337Exception("我去你IP怎么对不上喵?",response);
+                    return ErrRes.Dimples1337Exception("我去你IP怎么对不上杂鱼喵~",response);
                 }else {
                     if (!email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}")) {
-                        return ErrRes.IllegalRequestException("邮箱格式错误喵~", response);
+                        return ErrRes.IllegalRequestException("The mailbox is malformed 杂鱼喵~", response);
                     } else {
                         if (accountsRepository.findByEmail(email) != null) {
                             if (redisService.getValue(String.valueOf(BanEvent)) != null) {
-                                return ErrRes.NotFoundAccountException("账号不存在或因为密码错误次数过多锁定喵~", response);
+                                return ErrRes.NotFoundAccountException("The account doesn't exist or is locked because of a password error 杂鱼喵~", response);
                             } else {
                                 if (constMap.get(email) == null) {
                                     constMap.put(email, new Const(1));
@@ -75,42 +75,46 @@ public class LoginApi {
                                     String cookie = OtherUtils.RandomString(128);
                                     String token = OtherUtils.RandomString(64);
                                     String uid = accountsRepository.findByPwd(lockpwd);
-                                    nyanIDuserRepository.UpdateNyanID(token, cookie, uid);
-                                    if (constMap.get(email) != null) {
-                                        constMap.remove(email);
+                                    if (!accountsRepository.isBanned(uid)) {
+                                        nyanIDuserRepository.UpdateNyanID(token, cookie, uid);
+                                        if (constMap.get(email) != null) {
+                                            constMap.remove(email);
+                                        }
+                                        response.setHeader("TOKEN", token);
+                                        LoginJson loginJson = new LoginJson();
+                                        loginJson.setData(token);
+                                        loginJson.setStatus("success");
+                                        loginJson.setTimestamp(LocalDateTime.now());
+                                        loginJson.setToken(token);
+                                        loginJson.setData(Base64.getEncoder().encodeToString(cookie.getBytes()) + "." + Base64.getEncoder().encodeToString(token.getBytes()));
+                                        return loginJson;
+                                    }else {
+                                        return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal 杂鱼喵~ " ,response);
                                     }
-                                    response.setHeader("TOKEN", token);
-                                    LoginJson loginJson = new LoginJson();
-                                    loginJson.setData(token);
-                                    loginJson.setStatus("success");
-                                    loginJson.setTimestamp(LocalDateTime.now());
-                                    loginJson.setToken(token);
-                                    loginJson.setData(Base64.getEncoder().encodeToString(cookie.getBytes()) + "." + Base64.getEncoder().encodeToString(token.getBytes()));
-                                    return loginJson;
                                 } else {
                                     if (constMap.get(email) != null) {
                                         constMap.get(email).requestCount++;
                                     }
-                                    return ErrRes.NotFoundAccountException("账号不存在或因为密码错误次数过多锁定喵~", response);
+                                    return ErrRes.NotFoundAccountException("The account doesn't exist or is locked because of a password error 杂鱼喵~", response);
                                 }
                             }
                         } else {
-                            return ErrRes.NotFoundAccountException("账号不存在或因为密码错误次数过多锁定喵~", response);
+                            return ErrRes.NotFoundAccountException("The account doesn't exist or is locked because of a password error 杂鱼喵~", response);
                         }
                     }
                 }
             }else {
-                return ErrRes.IllegalRequestException("参数错误",response);
+                return ErrRes.IllegalRequestException("The parameter is incorrect 杂鱼喵~",response);
             }
 
-        }else return ErrRes.IllegalRequestException("参数错误喵~",response);
+        }else return ErrRes.IllegalRequestException("The parameter is incorrect 杂鱼喵~",response);
     }
 
 
 
     @GetMapping
     public Object GetMethod(HttpServletResponse response){
-        return ErrRes.MethodNotAllowedException("不支持的请求模式",response);
+        return ErrRes.MethodNotAllowedException("Unsupported request patterns 杂鱼喵~",response);
     }
 
 

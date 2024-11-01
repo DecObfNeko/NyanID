@@ -32,7 +32,7 @@ public class AuthenticateEmailApi {
 
     @GetMapping
     public Object GetMethod(HttpServletResponse response) {
-        return ErrRes.IllegalClientException("该接口不支持Get请求喵~",response);
+        return ErrRes.IllegalClientException("This API does not support GET requests 杂鱼喵~",response);
     }
 
     @PostMapping
@@ -52,16 +52,16 @@ public class AuthenticateEmailApi {
                     redisService.deleteValue(code);
                     SJson sJson = new SJson();
                     sJson.setStatus(200);
-                    sJson.setMessage("验证成功,请前往登录喵~");
+                    sJson.setMessage("The verification is successful, please go to Login 杂鱼喵~");
                     sJson.setTimestamp(LocalDateTime.now());
                     return sJson;
                 }else {
-                    return ErrRes.IllegalRequestException("验证码错误或失效",response);
+                    return ErrRes.IllegalRequestException("The verification code is incorrect or invalid 杂鱼喵~",response);
                 }
             }else {
-                return ErrRes.IllegalRequestException("参数错误",response);
+                return ErrRes.IllegalRequestException("The parameter is incorrect 杂鱼喵~",response);
             }
-        }else return ErrRes.IllegalClientException("参数错误",response);
+        }else return ErrRes.IllegalClientException("The parameter is incorrect 杂鱼喵~",response);
 
     }
 }

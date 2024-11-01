@@ -36,6 +36,9 @@ public interface AccountsRepository extends JpaRepository<Accounts, String>, Ser
     @Query(value = "SELECT password FROM Accounts WHERE email = ?1")
     String LoginByEmail(String email);
 
+    @Query(value = "SELECT isBanned from Accounts WHERE uid = ?1")
+    Boolean isBanned(String uid);
+
     @Modifying
     @Transactional
     @Query(value = "update Accounts set username = ?1 where uid = ?2")
