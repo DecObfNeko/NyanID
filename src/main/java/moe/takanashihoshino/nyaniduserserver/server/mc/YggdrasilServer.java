@@ -2,7 +2,7 @@ package moe.takanashihoshino.nyaniduserserver.server.mc;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrRes;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
 import moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson.YggdrasilServerJsonLinks;
 import moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson.YggdrasilServerJsonMeta;
 import moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson.YggdrasilServerJsonRoot;

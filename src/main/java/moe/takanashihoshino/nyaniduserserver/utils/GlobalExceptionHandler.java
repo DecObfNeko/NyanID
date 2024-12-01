@@ -1,8 +1,8 @@
 package moe.takanashihoshino.nyaniduserserver.utils;
 
 
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.Error;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.Ygg.ErrorResponse;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Ygg.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;

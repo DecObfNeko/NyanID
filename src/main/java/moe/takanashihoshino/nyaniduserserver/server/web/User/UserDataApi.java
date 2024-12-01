@@ -4,12 +4,12 @@ package moe.takanashihoshino.nyaniduserserver.server.web.User;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrRes;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.Error;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrorCode;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.SJson;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.NyanIDuserRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrorCode;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.SJson;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,7 @@ public class UserDataApi {
             MultipartFile avatarFile = (MultipartFile) avatar;
             if (!request.getContentType().matches("multipart/form-data") &&avatarFile.getContentType() != null){
                 String ContentType = avatarFile.getContentType();
-                if (ContentType.matches("image/.*")) {
+                if (ContentType.matches("image/.*") && avatarFile.getSize() < 1024 * 1024 * 10) {
                     String Authorization = request.getHeader("Authorization");
                     String Token = Authorization.replace("Bearer ", "").replace(" ", "");
                     String uid = nyanIDuserRepository.getAccount(Token);

@@ -4,10 +4,10 @@ package moe.takanashihoshino.nyaniduserserver.server.web.User;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrRes;
-import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.NyanIDuserRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
+import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.server.web.User.UserJson.LoginJson;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +47,11 @@ public class LoginApi {
             JSONObject a = JSONObject.parseObject(JSONObject.toJSONString(data));
             String email = a.getString("email");
             String password = a.getString("pwd");
+            String DevicesID = a.getString("devid");
+            String DevicesName = a.getString("devname");
+            if (DevicesID == null || DevicesName == null){
+                ErrRes.IllegalRequestException("The Devices info is incorrect 杂鱼喵~", response);
+            }
             if (email != null && password != null){
                 JSONObject BanEvent = new JSONObject();
                 BanEvent.put(EventID, email);
@@ -66,6 +71,8 @@ public class LoginApi {
                                 String pwd = accountsRepository.LoginByEmail(email);
                                 String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
                                 if (Objects.equals(lockpwd, pwd)) {
+
+
                                     String cookie = OtherUtils.RandomString(128);
                                     String token = OtherUtils.RandomString(64);
                                     String uid = accountsRepository.findByPwd(lockpwd);
@@ -82,6 +89,9 @@ public class LoginApi {
                                         loginJson.setToken(token);
                                         loginJson.setData(Base64.getEncoder().encodeToString(cookie.getBytes()) );
                                         return loginJson;
+
+
+
                                     }else {
                                         return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal 杂鱼喵~ " ,response);
                                     }

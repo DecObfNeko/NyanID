@@ -1,6 +1,6 @@
 package moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList;
 
-import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.Command.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

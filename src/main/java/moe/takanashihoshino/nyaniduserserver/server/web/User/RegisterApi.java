@@ -4,10 +4,10 @@ package moe.takanashihoshino.nyaniduserserver.server.web.User;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrRes;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.SJson;
-import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.SJson;
+import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.UUIDHelper;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @RestController

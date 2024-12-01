@@ -1,7 +1,7 @@
 package moe.takanashihoshino.nyaniduserserver.server;
 
 import jakarta.servlet.http.HttpServletResponse;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.SJson;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.SJson;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
