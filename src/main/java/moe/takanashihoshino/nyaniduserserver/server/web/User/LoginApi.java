@@ -10,6 +10,7 @@ import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsR
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.server.web.User.UserJson.LoginJson;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,9 @@ public class LoginApi {
     @Autowired
     private NyanIDuserRepository nyanIDuserRepository;
 
+    @Autowired
+    private UserDevicesRepository userDevicesRepository;
+
     @Value("${NyanidSetting.encryptionKey}")
     private String encryptionKey;
     private final Map<String, LoginApi.Const> constMap = new HashMap<>();
@@ -50,7 +54,7 @@ public class LoginApi {
             String DevicesID = a.getString("devid");
             String DevicesName = a.getString("devname");
             if (DevicesID == null || DevicesName == null){
-                ErrRes.IllegalRequestException("The Devices info is incorrect 杂鱼喵~", response);
+                return ErrRes.IllegalRequestException("The Devices info is incorrect 杂鱼喵~", response);
             }
             if (email != null && password != null){
                 JSONObject BanEvent = new JSONObject();
@@ -71,12 +75,18 @@ public class LoginApi {
                                 String pwd = accountsRepository.LoginByEmail(email);
                                 String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
                                 if (Objects.equals(lockpwd, pwd)) {
-
-
                                     String cookie = OtherUtils.RandomString(128);
                                     String token = OtherUtils.RandomString(64);
                                     String uid = accountsRepository.findByPwd(lockpwd);
                                     if (!accountsRepository.isBanned(uid)) {
+                                        if (Objects.equals(userDevicesRepository.findByUid(uid).getDeviceID(), DevicesID)){
+
+
+                                        }
+
+
+
+
                                         nyanIDuserRepository.UpdateNyanID(token, cookie, uid);
                                         if (constMap.get(email) != null) {
                                             constMap.remove(email);

@@ -12,10 +12,10 @@ import java.io.Serializable;
 @Repository
 public interface AccountsRepository extends JpaRepository<Accounts, String>, Serializable {
 
-    @Query(value = "SELECT uid FROM Accounts WHERE uid = ?1")
-    String findByUid(String uid);
+    @Query(value = "SELECT uid FROM Accounts WHERE uid = ?1 or email = ?1 or username = ?1")
+    String find(String info);
 
-    @Query(value = "SELECT email FROM Accounts WHERE username = ?1")
+    @Query(value = "SELECT email FROM Accounts WHERE username = ?1 ")
     String findByUsername(String username);
 
     @Query(value = "SELECT email FROM Accounts WHERE uid = ?1")

@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class RedisCommand implements Command {
 
     @Autowired
-   private RedisService redisService;
+    private RedisService redisService;
 
 
     @Override

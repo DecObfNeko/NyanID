@@ -15,4 +15,10 @@ Run `NyanID-Package`  <--记得关闭360
 ### Redis RUN:
 Run `start`
 
+## TODO:
 
+- [ ] ** UserDevices Manager System **
+- [ ] ** OAuth2.0  **
+- [ ] ** Yggdrasil Server **
+- [ ] ** Plugins System **
+- [ ] ** e Neko **

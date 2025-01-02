@@ -2,10 +2,7 @@ package moe.takanashihoshino.nyaniduserserver.utils.Command;
 
 
 import jakarta.annotation.PostConstruct;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.HelloCommand;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.HelpCommand;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.RedisCommand;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.StopCommand;
+import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,6 +16,9 @@ public class CmdMain {
 
     @Autowired
     private RedisCommand redisCommand;
+
+    @Autowired
+    private UserManagerCommand userManagerCommand;
 
 
 
@@ -35,6 +35,7 @@ public class CmdMain {
             commandManager.registerCommand(new HelpCommand());
             commandManager.registerCommand(new StopCommand());
             commandManager.registerCommand(redisCommand);
+            commandManager.registerCommand(userManagerCommand);
             //END Register
             Thread consoleThread = new Thread(new ConsoleInputHandler(commandManager));
             consoleThread.start();
