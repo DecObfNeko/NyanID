@@ -40,14 +40,6 @@ public class NyanIdUserserverApplication {
             Logger.getLogger("NyanID").info("[NyanID-UserServer] ["+ LocalDateTime.now() +"] : Code By TakanashiHoshino");
             Logger.getLogger("NyanID").info("[NyanID-UserServer] ["+ LocalDateTime.now() +"] : 爱来自ABYDOS喵~");
         } else if (Files.exists(targetPath)) {
-
-
-            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            try {
-                scheduler.start();
-            } catch (SchedulerException e) {
-                Logger.getLogger("NyanID").warning("[NyanID-UserServer] ["+ LocalDateTime.now() +"] :"+e);
-            }
             SpringApplication.run(NyanIdUserserverApplication.class, args);
         }
 
