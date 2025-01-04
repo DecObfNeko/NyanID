@@ -22,3 +22,6 @@ Run `start`
 - [ ] ** Yggdrasil Server **
 - [ ] ** Plugins System **
 - [ ] ** e Neko **
+
+## Bug:
+- 如果两个不同的账号使用一样的密码那这两个账号就都登不上了
