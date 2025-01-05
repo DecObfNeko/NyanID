@@ -68,7 +68,7 @@ public class LoginApi {
                                 if (Objects.equals(lockpwd, pwd)) {
                                     String cookie = OtherUtils.RandomString(128);
                                     String token = OtherUtils.RandomString(64);
-                                    String uid = accountsRepository.findByPwd(lockpwd);
+                                    String uid = accountsRepository.findByEmail(email);
                                     if (!accountsRepository.isBanned(uid)) {
                                         nyanIDuserRepository.UpdateNyanID(token, cookie, uid);
                                         if (constMap.get(email) != null) {
