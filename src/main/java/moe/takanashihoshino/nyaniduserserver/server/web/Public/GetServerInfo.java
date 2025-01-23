@@ -27,12 +27,12 @@ public class GetServerInfo {
     @GetMapping(produces = "application/json")
     public Object GetServerINFO(HttpServletResponse response) {
         String AllUser = accountsRepository.GetAllUser();
-        String BannedUser = accountsRepository.GetAllBannedUser();
+//        String BannedUser = accountsRepository.GetAllBannedUser();
         String GetAllApplication = oAuthAppRepository.GetAllApplication();
         int NumberOfEvents = redisService.getAll();
         JSONObject data = new JSONObject();
         data.put("AllUser",AllUser);
-        data.put("BannedUser",BannedUser);
+//        data.put("BannedUser",BannedUser);
         data.put("AllApplication",GetAllApplication);
         data.put("NumberOfEvents",NumberOfEvents/6);
         response.setStatus(200);

@@ -12,6 +12,7 @@ import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsR
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +30,13 @@ public class UserDataApi {
 
     @Autowired
     private NyanIDuserRepository nyanIDuserRepository;
+
+    @Autowired
+    private UserDevicesRepository userDevicesRepository;
+
     @Autowired
     private AccountsRepository accountsRepository;
+
     @Autowired
     private EmailService emailService;
 
@@ -39,7 +45,7 @@ public class UserDataApi {
     public <T> Object PostMethod(@RequestBody(required = false) T data, HttpServletResponse response, HttpServletRequest request){
         String Authorization = request.getHeader("Authorization");
         String Token = Authorization.replace("Bearer ", "").replace(" ", "");
-        String uid = nyanIDuserRepository.getAccount(Token);
+        String uid = userDevicesRepository.findUidByToken(Token);
         if (data != null){
            JSONObject a = JSONObject.parseObject(JSONObject.toJSONString(data));
            String Action = a.getString("action");
@@ -81,7 +87,7 @@ public class UserDataApi {
                 if (ContentType.matches("image/.*") && avatarFile.getSize() < 1024 * 1024 * 10) {
                     String Authorization = request.getHeader("Authorization");
                     String Token = Authorization.replace("Bearer ", "").replace(" ", "");
-                    String uid = nyanIDuserRepository.getAccount(Token);
+                    String uid = userDevicesRepository.findUidByToken(Token);
                     SaveUserAvatar(uid, avatarFile);
                     SJson sJson = new SJson();
                     sJson.setMessage("Setting avatar success MiaoWu~");

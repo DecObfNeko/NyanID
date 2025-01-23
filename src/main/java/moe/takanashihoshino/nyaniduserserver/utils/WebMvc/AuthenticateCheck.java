@@ -7,7 +7,10 @@ import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrorCode;
 import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.BanUserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.UserDevicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,10 +26,13 @@ import java.util.Objects;
 public class AuthenticateCheck implements HandlerInterceptor {
 
     @Autowired
-    private NyanIDuserRepository nyanIDuserRepository;
+    private UserDevicesService userDevicesService;
 
     @Autowired
-    private AccountsRepository accountsRepository;
+    private BanUserRepository banUserRepository;
+
+    @Autowired
+    private UserDevicesRepository userDevicesRepository;
 
     @Autowired
     private RedisService redisService;
@@ -42,10 +48,10 @@ public class AuthenticateCheck implements HandlerInterceptor {
         String RequestMode = request.getMethod();
         if (Authorization != null && getEvent != null){
             String Token = Authorization.replace("Bearer ", "").replace(" ", "");
-            if (nyanIDuserRepository.getAccount(Token) != null){
-                String uid = nyanIDuserRepository.getAccount(Token);
-                String ClientID =nyanIDuserRepository.getClienID(uid);
-                if (!accountsRepository.isBanned(uid)) {
+            if (userDevicesRepository.findUidByToken(Token) != null){
+                String uid = userDevicesRepository.findUidByToken(Token);
+                String ClientID =userDevicesRepository.findClientIdByToken(Token);
+                if (banUserRepository.findBanIDByUid(uid) == null) {
                     switch (getEvent) {
                         case "Ua"://上传头像 PUT
                             if (Objects.equals(RequestMode, "PUT")) {

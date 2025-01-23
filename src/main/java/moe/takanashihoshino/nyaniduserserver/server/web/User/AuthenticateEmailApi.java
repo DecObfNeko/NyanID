@@ -52,7 +52,6 @@ public class AuthenticateEmailApi {
                     Accounts accounts = new Accounts();
                     accounts.setUid(uid);
                     accounts.setEmail(email);
-                    accounts.setIsBanned(false);
                     accounts.setPassword(password);
                     accounts.setUsername(username);
                     accounts.setBind("");
@@ -61,9 +60,7 @@ public class AuthenticateEmailApi {
                     userService.save(accounts);
                     NyanIDuser nyanIDuser = new NyanIDuser();
                     nyanIDuser.setUid(uid);
-                    nyanIDuser.setClientid("");
-                    nyanIDuser.setBCookie("");
-                    nyanIDuser.setHwid("");
+                    nyanIDuser.setDescription("啊哈,这只猫猫很懒,没有简介啦!");
                     nyanIDuser.setNickname("还没想好取啥名字的新猫猫");
                     nyanIDuser.setExp(0);
                     nyanIDuser.setIsDeveloper(false);

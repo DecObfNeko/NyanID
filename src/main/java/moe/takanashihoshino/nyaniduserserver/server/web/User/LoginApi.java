@@ -7,10 +7,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
 import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.BanUserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.server.web.User.UserJson.LoginJson;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.UserDevicesService;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.UserDevices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +38,13 @@ public class LoginApi {
     private AccountsRepository accountsRepository;
 
     @Autowired
-    private NyanIDuserRepository nyanIDuserRepository;
+    private UserDevicesService userDevicesService;
 
     @Autowired
     private UserDevicesRepository userDevicesRepository;
+
+    @Autowired
+    private BanUserRepository banUserRepository;
 
     @Value("${NyanidSetting.encryptionKey}")
     private String encryptionKey;
@@ -53,9 +59,7 @@ public class LoginApi {
             String password = a.getString("pwd");
             String DevicesID = a.getString("devid");
             String DevicesName = a.getString("devname");
-            if (DevicesID == null || DevicesName == null){
-                return ErrRes.IllegalRequestException("The Devices info is incorrect 杂鱼喵~", response);
-            }
+            String IP = request.getRemoteAddr();
             if (email != null && password != null){
                 JSONObject BanEvent = new JSONObject();
                 BanEvent.put(EventID, email);
@@ -75,32 +79,46 @@ public class LoginApi {
                                 String pwd = accountsRepository.LoginByEmail(email);
                                 String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
                                 if (Objects.equals(lockpwd, pwd)) {
-                                    String cookie = OtherUtils.RandomString(128);
-                                    String token = OtherUtils.RandomString(64);
-                                    String uid = accountsRepository.findByPwd(lockpwd);
-                                    if (!accountsRepository.isBanned(uid)) {
-                                        if (Objects.equals(userDevicesRepository.findByUid(uid).getDeviceID(), DevicesID)){
 
-
+                                    String uid = accountsRepository.findByEmail(email);
+                                    if (banUserRepository.findBanIDByUid(uid) == null) {
+                                        String session = request.getSession().getId();
+                                        if (Objects.equals(userDevicesRepository.findSessionBySession(session),session)){
+                                            String token = userDevicesRepository.findTokenBySession(session);
+                                            String clientid = userDevicesRepository.findClientIdByToken(token);
+                                            response.setHeader("TOKEN", token);
+                                            LoginJson loginJson = new LoginJson();
+                                            loginJson.setData(clientid);
+                                            loginJson.setStatus("success");
+                                            loginJson.setTimestamp(LocalDateTime.now());
+                                            loginJson.setToken(token);
+                                            loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()) );
+                                            return loginJson;
+                                        }else {
+                                            String clientid = OtherUtils.RandomString(128);
+                                            String token = OtherUtils.RandomString(64);
+                                            UserDevices userDevices = new UserDevices();
+                                            userDevices.setUid(uid);
+                                            userDevices.setDeviceID(DevicesID);
+                                            userDevices.setDeviceName(DevicesName);
+                                            userDevices.setToken(token);
+                                            userDevices.setIsActive(true);
+                                            userDevices.setSession(session);
+                                            userDevices.setClientid(clientid);
+                                            userDevices.setExpireTime(LocalDateTime.now().plusDays(7));
+                                            userDevicesService.save(userDevices);
+                                            if (constMap.get(email) != null) {
+                                                constMap.remove(email);
+                                            }
+                                            response.setHeader("TOKEN", token);
+                                            LoginJson loginJson = new LoginJson();
+                                            loginJson.setData(clientid);
+                                            loginJson.setStatus("success");
+                                            loginJson.setTimestamp(LocalDateTime.now());
+                                            loginJson.setToken(token);
+                                            loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()) );
+                                            return loginJson;
                                         }
-
-
-
-
-                                        nyanIDuserRepository.UpdateNyanID(token, cookie, uid);
-                                        if (constMap.get(email) != null) {
-                                            constMap.remove(email);
-                                        }
-                                        response.setHeader("TOKEN", token);
-                                        LoginJson loginJson = new LoginJson();
-                                        loginJson.setData(token);
-                                        loginJson.setStatus("success");
-                                        loginJson.setTimestamp(LocalDateTime.now());
-                                        loginJson.setToken(token);
-                                        loginJson.setData(Base64.getEncoder().encodeToString(cookie.getBytes()) );
-                                        return loginJson;
-
-
 
                                     }else {
                                         return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal 杂鱼喵~ " ,response);

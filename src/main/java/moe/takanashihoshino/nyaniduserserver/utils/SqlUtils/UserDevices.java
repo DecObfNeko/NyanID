@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class UserDevices implements Serializable {
 
     @Id
     @Column(columnDefinition="varchar(150)",nullable = false)
-    private String uid;
+    private String clientid;
 
     private String DeviceName;
 
@@ -30,8 +31,9 @@ public class UserDevices implements Serializable {
 
     private boolean IsActive;
 
-    private long ExpireTime;
+    private String hwid;
 
+    private String uid;
 
-
+    private LocalDateTime ExpireTime;
 }

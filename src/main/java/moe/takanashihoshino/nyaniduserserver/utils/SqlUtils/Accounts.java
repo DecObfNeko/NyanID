@@ -34,9 +34,6 @@ public class Accounts implements Serializable {
     private Boolean isActive;
 
     @Column
-    private Boolean isBanned;
-
-    @Column
     private String SecretKey;
 
 }

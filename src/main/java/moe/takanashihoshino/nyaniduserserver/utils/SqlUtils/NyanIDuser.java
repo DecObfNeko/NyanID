@@ -18,21 +18,12 @@ public class NyanIDuser implements Serializable {
     @Column(columnDefinition="varchar(150)",nullable = false)
     private String uid;
 
-    @Column
     private int exp;
-
-    @Column
-    private String hwid;
-
-    @Column
-    private String clientid;
 
     private boolean IsDeveloper;
 
-    @Column
-    private String BCookie;
+    private String Description;
 
-    @Column
     private String nickname;
 
 

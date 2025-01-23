@@ -32,9 +32,6 @@ public class UserManagerCommand implements Command {
     private BanUserRepository banUserRepository;
 
     @Autowired
-    private UserDevicesService userDevicesService;
-
-    @Autowired
     private BanUserService banUserService;
 
 
@@ -58,10 +55,9 @@ public class UserManagerCommand implements Command {
             if (!t1.equals("create") && !t1.equals("change")){
                 switch (t1) {
                     case "ban":
-                        if (!(accountsRepository.find(args[1]) == null)){
-                            String uid = accountsRepository.find(args[1]);
-                            List<Object[]> resultList = banUserRepository.findByUid(uid);
-                            if (resultList.isEmpty()) {
+                        if (!(accountsRepository.find(args[1]) == null)) {
+                            String uid = accountsRepository.find(args[1]).getUid();
+                            if (banUserRepository.findBanIDByUid(uid) == null ) {
                                 String banid = String.valueOf(UUID.nameUUIDFromBytes((args[1]+LocalDateTime.now()).getBytes(StandardCharsets.UTF_8)));
                                 BanUserList banUserList = new BanUserList();
                                 banUserList.setBanID(banid);
@@ -77,16 +73,9 @@ public class UserManagerCommand implements Command {
                                 banUserService.save(banUserList);
                                 logger.info("Banned User ["+uid+"] and BanID:"+banid);
                             }else {
-                                BanUserList banUserList = null;
-                                if (!resultList.isEmpty()) {
-                                    Object[] result = resultList.get(0);
-                                    banUserList = new BanUserList();
-                                    banUserList.setBanID((String) result[0]);
-                                    banUserList.setBanTime((LocalDateTime) result[1]);
-                                    banUserList.setReason((String) result[2]);
-                                    banUserList.setBannedBy((String) result[3]);
-                                    logger.info("User ["+uid+"] is Banned . Reason: ["+ result[2]+"], BanID: ["+result[0]+"], BanTime: ["+result[1]+"], BannedBy: ["+result[3]+"].");
-                                }
+//                                if (!(list == null)) {
+//                                //logger.info("User ["+uid+"] is Banned . Reason: ["+ list.getReason()+"], BanID: ["+list.getBanID()+"], BanTime: ["+list.getBanTime()+"], BannedBy: ["+list.getBannedBy()+"].");
+//                                }
                             }
                         }else {
                             logger.warning("用户不存在杂鱼喵~");

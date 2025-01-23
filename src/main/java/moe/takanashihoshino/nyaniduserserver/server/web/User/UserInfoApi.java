@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,15 @@ public class UserInfoApi {
     private NyanIDuserRepository nyanIDuserRepository;
     @Autowired
     private AccountsRepository accountsRepository;
+    @Autowired
+    private UserDevicesRepository userDevicesRepository;
 
 
     @GetMapping(produces = "application/json")
     public Object GETMethod(HttpServletResponse response, HttpServletRequest request) {
             String Authorization = request.getHeader("Authorization");
             String Token = Authorization.replace("Bearer ", "").replace(" ", "");
-            String uid = nyanIDuserRepository.getAccount(Token);
+            String uid = userDevicesRepository.findUidByToken(Token);
             String nickname = nyanIDuserRepository.getNickname(uid);
             int exp = nyanIDuserRepository.getUserEXP(uid);
             String isDeveloper = nyanIDuserRepository.UserIsDeveloper(uid) ? "true" : "false";
