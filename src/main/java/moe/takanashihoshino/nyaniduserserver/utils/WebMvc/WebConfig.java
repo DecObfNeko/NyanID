@@ -16,6 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     private AuthenticateCheck authenticateCheck;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AddHeader()).addPathPatterns("/**");
         registry.addInterceptor(ipSecurityDetection).addPathPatterns("/authserver/**").addPathPatterns("/api/zako/v1/login").addPathPatterns("api/zako/v1/register");
         registry.addInterceptor(authenticateCheck).addPathPatterns("/api/zako/v1/userdata").addPathPatterns("/api/zako/v1/userinfo");
     }
