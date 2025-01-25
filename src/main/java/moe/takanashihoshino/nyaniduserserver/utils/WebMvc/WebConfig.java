@@ -1,6 +1,7 @@
 package moe.takanashihoshino.nyaniduserserver.utils.WebMvc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -15,6 +16,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private AuthenticateCheck authenticateCheck;
+
+    @Value("${NyanidSetting.allowedOriginPatterns}")
+    private String allowedOriginPatterns;
+
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(ipSecurityDetection).addPathPatterns("/authserver/**").addPathPatterns("/api/zako/v1/login").addPathPatterns("api/zako/v1/register");
@@ -25,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")  // 可限制哪个请求可以通过跨域
                 .allowedHeaders("*")  // 可限制固定请求头可以通过跨域
                 .allowedMethods("*") // 可限制固定methods可以通过跨域
-                .allowedOrigins("*")  // 可限制访问ip可以通过跨域
+                .allowedOriginPatterns(allowedOriginPatterns)
                 .allowCredentials(true) // 是否允许发送cookie
                 .exposedHeaders(HttpHeaders.SET_COOKIE);
     }
