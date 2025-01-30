@@ -27,4 +27,5 @@ public interface UserDevicesRepository extends JpaRepository<UserDevices, String
     @Query(value = "SELECT Session FROM UserDevices WHERE Session = ?1  AND IsActive = true")
     String findSessionBySession(String Session);
 
+
 }

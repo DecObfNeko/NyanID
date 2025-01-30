@@ -20,6 +20,9 @@ public class CmdMain {
     @Autowired
     private UserManagerCommand userManagerCommand;
 
+    @Autowired
+    private SystemctlCommand systemctlCommand;
+
 
 
     @Value("${NyanidSetting.EnableCommand}")
@@ -34,6 +37,7 @@ public class CmdMain {
             commandManager.registerCommand(new HelloCommand());
             commandManager.registerCommand(new HelpCommand());
             commandManager.registerCommand(new StopCommand());
+            commandManager.registerCommand(systemctlCommand);
             commandManager.registerCommand(redisCommand);
             commandManager.registerCommand(userManagerCommand);
             //END Register

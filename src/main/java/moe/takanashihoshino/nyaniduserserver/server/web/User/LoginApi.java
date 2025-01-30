@@ -58,6 +58,7 @@ public class LoginApi {
             String email = a.getString("email");
             String password = a.getString("pwd");
             String DevicesID = a.getString("devid");
+            Boolean LoginForWeb = Boolean.valueOf(request.getHeader("LoginForWeb"));
             String DevicesName = a.getString("devname");
             String IP = request.getRemoteAddr();
             if (email != null && password != null){
@@ -76,52 +77,61 @@ public class LoginApi {
                                     constMap.remove(email);
                                     redisService.setValueWithExpiration(String.valueOf(BanEvent), "1", 180, TimeUnit.SECONDS);
                                 }
-                                String pwd = accountsRepository.LoginByEmail(email);
-                                String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
-                                if (Objects.equals(lockpwd, pwd)) {
-
-                                    String uid = accountsRepository.findByEmail(email);
-                                    if (banUserRepository.findBanIDByUid(uid) == null) {
+                                if (LoginForWeb){
+                                    String DevicesIDT = OtherUtils.RandomString(128);
+                                    String DevicesNameT = "Web";
+                                    DevicesName  = DevicesNameT;
+                                    DevicesID = DevicesIDT;
+                                }else {
+                                    if(DevicesID==null || DevicesName==null) {
+                                        return ErrRes.IllegalRequestException("The device ID or device name is missing 杂鱼喵~", response);
+                                    }
+                                }
+                                    String pwd = accountsRepository.LoginByEmail(email);
+                                    String lockpwd = OtherUtils.HMACSHA256(encryptionKey,password);
+                                    if (Objects.equals(lockpwd, pwd)) {
+                                        String uid = accountsRepository.findByEmail(email);
                                         String session = request.getSession().getId();
-                                        if (Objects.equals(userDevicesRepository.findSessionBySession(session),session)){
-                                            String token = userDevicesRepository.findTokenBySession(session);
-                                            String clientid = userDevicesRepository.findClientIdByToken(token);
-                                            response.setHeader("TOKEN", token);
-                                            LoginJson loginJson = new LoginJson();
-                                            loginJson.setData(clientid);
-                                            loginJson.setStatus("success");
-                                            loginJson.setTimestamp(LocalDateTime.now());
-                                            loginJson.setToken(token);
-                                            loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()) );
-                                            return loginJson;
-                                        }else {
-                                            String clientid = OtherUtils.RandomString(128);
-                                            String token = OtherUtils.RandomString(64);
-                                            UserDevices userDevices = new UserDevices();
-                                            userDevices.setUid(uid);
-                                            userDevices.setDeviceID(DevicesID);
-                                            userDevices.setDeviceName(DevicesName);
-                                            userDevices.setToken(token);
-                                            userDevices.setIsActive(true);
-                                            userDevices.setSession(session);
-                                            userDevices.setClientid(clientid);
-                                            userDevices.setExpireTime(LocalDateTime.now().plusDays(7));
-                                            userDevicesService.save(userDevices);
-                                            if (constMap.get(email) != null) {
-                                                constMap.remove(email);
+                                        if (banUserRepository.findBanIDByUid(uid) == null) {
+                                            if (Objects.equals(userDevicesRepository.findSessionBySession(session), session) || !LoginForWeb) {
+                                                System.out.print(session);
+                                                String token = userDevicesRepository.findTokenBySession(session);
+                                                String clientid = userDevicesRepository.findClientIdByToken(token);
+                                                response.setHeader("TOKEN", token);
+                                                LoginJson loginJson = new LoginJson();
+                                                loginJson.setData(clientid);
+                                                loginJson.setStatus("success");
+                                                loginJson.setTimestamp(LocalDateTime.now());
+                                                loginJson.setToken(token);
+                                                loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()));
+                                                return loginJson;
+                                            } else {
+                                                String clientid = OtherUtils.RandomString(128);
+                                                String token = OtherUtils.RandomString(64);
+                                                UserDevices userDevices = new UserDevices();
+                                                userDevices.setUid(uid);
+                                                userDevices.setDeviceID(DevicesID);
+                                                userDevices.setDeviceName(DevicesName);
+                                                userDevices.setToken(token);
+                                                userDevices.setIsActive(true);
+                                                userDevices.setSession(DevicesID);
+                                                userDevices.setClientid(clientid);
+                                                userDevices.setExpireTime(LocalDateTime.now().plusDays(7));
+                                                userDevicesService.save(userDevices);
+                                                if (constMap.get(email) != null) {
+                                                    constMap.remove(email);
+                                                }
+                                                response.setHeader("TOKEN", token);
+                                                LoginJson loginJson = new LoginJson();
+                                                loginJson.setData(clientid);
+                                                loginJson.setStatus("success");
+                                                loginJson.setTimestamp(LocalDateTime.now());
+                                                loginJson.setToken(token);
+                                                loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()));
+                                                return loginJson;
                                             }
-                                            response.setHeader("TOKEN", token);
-                                            LoginJson loginJson = new LoginJson();
-                                            loginJson.setData(clientid);
-                                            loginJson.setStatus("success");
-                                            loginJson.setTimestamp(LocalDateTime.now());
-                                            loginJson.setToken(token);
-                                            loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()) );
-                                            return loginJson;
-                                        }
-
-                                    }else {
-                                        return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal 杂鱼喵~ " ,response);
+                                        } else {
+                                            return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal 杂鱼喵~ ", response);
                                     }
                                 } else {
                                     if (constMap.get(email) != null) {
