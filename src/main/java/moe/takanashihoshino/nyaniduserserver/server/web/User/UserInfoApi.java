@@ -31,7 +31,7 @@ public class UserInfoApi {
             String uid = userDevicesRepository.findUidByToken(Token);
             String nickname = nyanIDuserRepository.getNickname(uid);
             int exp = nyanIDuserRepository.getUserEXP(uid);
-            String isDeveloper = nyanIDuserRepository.UserIsDeveloper(uid) ? "true" : "false";
+            Boolean isDeveloper = nyanIDuserRepository.UserIsDeveloper(uid) ? true : false;
             String email = accountsRepository.GetEmailByUid(uid);
 
             JSONObject jsonObject = new JSONObject();
