@@ -93,7 +93,7 @@ public class LoginApi {
                                         String uid = accountsRepository.findByEmail(email);
                                         String session = request.getSession().getId();
                                         if (banUserRepository.findBanIDByUid(uid) == null) {
-                                            if (Objects.equals(userDevicesRepository.findSessionBySession(session), session) || !LoginForWeb) {
+                                            if (Objects.equals(userDevicesRepository.findSessionBySession(session), session)) {
                                                 System.out.print(session);
                                                 String token = userDevicesRepository.findTokenBySession(session);
                                                 String clientid = userDevicesRepository.findClientIdByToken(token);
@@ -114,7 +114,7 @@ public class LoginApi {
                                                 userDevices.setDeviceName(DevicesName);
                                                 userDevices.setToken(token);
                                                 userDevices.setIsActive(true);
-                                                userDevices.setSession(DevicesID);
+                                                userDevices.setSession(session);
                                                 userDevices.setClientid(clientid);
                                                 userDevices.setExpireTime(LocalDateTime.now().plusDays(7));
                                                 userDevicesService.save(userDevices);

@@ -31,11 +31,13 @@ public class GetServerInfo {
     @Autowired
     private RedisService redisService;
 
+    @Value("${NyanidSetting.msg}")
+    private String[] msg;
+
     private  String EventID = "ServerInfo";
 
     @GetMapping(produces = "application/json")
     public Object GetServerINFO(HttpServletResponse response, HttpServletRequest request) {
-        String[] msg = {"Here is NyaCat Cloud!","Here is NyaCat Cloud!","Here is NyaCat Cloud!asdasd","Here is NyaCat Cloud!asdasdasdasd","Here is NyaCat Cloud!asdsdasdasdasdasdasdasd"};
 
         String AllUser = accountsRepository.GetAllUser();
 //        String BannedUser = accountsRepository.GetAllBannedUser();
