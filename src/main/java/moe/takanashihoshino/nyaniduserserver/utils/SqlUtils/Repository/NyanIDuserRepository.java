@@ -18,6 +18,9 @@ public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>,
     @Query(value = "SELECT exp FROM NyanIDuser where uid = ?1")
     int getUserEXP(String uid);
 
+    @Query(value = "SELECT Description FROM NyanIDuser where uid = ?1")
+    String GetDescriptionByUid(String uid);
+
     @Query(value = "SELECT IsDeveloper FROM NyanIDuser where uid = ?1")
     boolean UserIsDeveloper(String uid);
 

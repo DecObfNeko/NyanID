@@ -33,10 +33,14 @@ public class UserInfoApi {
             int exp = nyanIDuserRepository.getUserEXP(uid);
             Boolean isDeveloper = nyanIDuserRepository.UserIsDeveloper(uid) ? true : false;
             String email = accountsRepository.GetEmailByUid(uid);
+            String Description = nyanIDuserRepository.GetDescriptionByUid(uid);
+            String Username = accountsRepository.GetUsernameByUid(uid);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("nickname",nickname);
             jsonObject.put("exp",exp);
+            jsonObject.put("description",Description);
+            jsonObject.put("username",Username);
             jsonObject.put("isDeveloper",isDeveloper);
             jsonObject.put("email",email);
             jsonObject.put("uid",uid);

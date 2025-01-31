@@ -28,11 +28,17 @@ public interface AccountsRepository extends JpaRepository<Accounts, String>, Ser
     @Query(value = "SELECT uid FROM Accounts WHERE email = ?1")
     String findByEmail(String email);
 
+    @Query(value = "SELECT uid FROM Accounts WHERE uid = ?1")
+    String findByuid(String uid);
+
     @Query(value = "SELECT password FROM Accounts WHERE email = ?1")
     String LoginByEmail(String email);
 
     @Query(value = "SELECT COUNT(*) AS nums FROM Accounts ")
     String GetAllUser();
+
+    @Query(value = "SELECT username FROM Accounts where uid = ?1")
+    String GetUsernameByUid(String uid);
 
 //    @Query(value = "SELECT COUNT(*) AS nums FROM Accounts where isBanned = true ")
 //    String GetAllBannedUser();
