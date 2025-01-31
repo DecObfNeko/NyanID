@@ -117,10 +117,10 @@ public class UserDataApi {
         File originalFile = new File(UserAvatar+uid+".png");
         if (originalFile.isFile()) {
             originalFile.delete();
-            OtherUtils.reduceImageByRatio(avatar.getInputStream(), UserAvatar,uid,10, 10);
+            OtherUtils.reduceImageByRatio(avatar.getInputStream(), UserAvatar,uid,1, 1);
         }else {
             //System.out.println(false);
-            OtherUtils.reduceImageByRatio(avatar.getInputStream(), UserAvatar,uid,10, 10);
+            OtherUtils.reduceImageByRatio(avatar.getInputStream(), UserAvatar,uid,1, 1);
         }
 //        String newavatarMD5 = DigestUtils.md5DigestAsHex(avatar.getBytes());
 //        System.out.println(newavatarMD5);
