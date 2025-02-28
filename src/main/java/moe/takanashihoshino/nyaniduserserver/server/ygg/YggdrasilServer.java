@@ -1,11 +1,11 @@
-package moe.takanashihoshino.nyaniduserserver.server.mc;
+package moe.takanashihoshino.nyaniduserserver.server.ygg;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
-import moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson.YggdrasilServerJsonLinks;
-import moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson.YggdrasilServerJsonMeta;
-import moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson.YggdrasilServerJsonRoot;
+import moe.takanashihoshino.nyaniduserserver.server.ygg.YggdrasilServerJson.YggdrasilServerJsonLinks;
+import moe.takanashihoshino.nyaniduserserver.server.ygg.YggdrasilServerJson.YggdrasilServerJsonMeta;
+import moe.takanashihoshino.nyaniduserserver.server.ygg.YggdrasilServerJson.YggdrasilServerJsonRoot;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

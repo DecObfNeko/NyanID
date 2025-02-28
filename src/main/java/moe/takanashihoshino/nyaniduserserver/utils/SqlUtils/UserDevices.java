@@ -27,6 +27,8 @@ public class UserDevices implements Serializable {
 
     private String Token;
 
+    private String Ip;
+
     private String Session;
 
     private boolean IsActive;
@@ -35,5 +37,5 @@ public class UserDevices implements Serializable {
 
     private String uid;
 
-    private LocalDateTime ExpireTime;
+    private LocalDateTime CreateTime;
 }

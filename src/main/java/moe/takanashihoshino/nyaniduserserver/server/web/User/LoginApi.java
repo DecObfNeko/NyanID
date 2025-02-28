@@ -13,6 +13,7 @@ import moe.takanashihoshino.nyaniduserserver.server.web.User.UserJson.LoginJson;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.UserDevicesService;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.impl.UserDevicesServiceImpl;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.UserDevices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,9 +95,9 @@ public class LoginApi {
                                     if (Objects.equals(lockpwd, pwd)) {
                                         String uid = accountsRepository.findByEmail(email);
                                         String session = request.getSession().getId();
+                                        String  UserSession = userDevicesRepository.findSessionBySession(session);
                                         if (banUserRepository.findBanIDByUid(uid) == null) {
-                                            if (Objects.equals(userDevicesRepository.findSessionBySession(session), session)) {
-                                                System.out.print(session);
+                                            if (Objects.equals(UserSession, session) && OtherUtils.isDaysBefore(userDevicesRepository.findTimeBySession(session), 7)) {
                                                 String token = userDevicesRepository.findTokenBySession(session);
                                                 String clientid = userDevicesRepository.findClientIdByToken(token);
                                                 response.setHeader("TOKEN", token);
@@ -106,6 +109,7 @@ public class LoginApi {
                                                 loginJson.setData(Base64.getEncoder().encodeToString(token.getBytes()));
                                                 return loginJson;
                                             } else {
+                                                userDevicesRepository.deleteBySession(UserSession);
                                                 String clientid = OtherUtils.RandomString(128);
                                                 String token = OtherUtils.RandomString(64);
                                                 UserDevices userDevices = new UserDevices();
@@ -113,10 +117,11 @@ public class LoginApi {
                                                 userDevices.setDeviceID(DevicesID);
                                                 userDevices.setDeviceName(DevicesName);
                                                 userDevices.setToken(token);
+                                                userDevices.setHwid(IP);
                                                 userDevices.setIsActive(true);
                                                 userDevices.setSession(session);
                                                 userDevices.setClientid(clientid);
-                                                userDevices.setExpireTime(LocalDateTime.now().plusDays(7));
+                                                userDevices.setCreateTime(LocalDateTime.now());
                                                 userDevicesService.save(userDevices);
                                                 if (constMap.get(email) != null) {
                                                     constMap.remove(email);
@@ -131,7 +136,7 @@ public class LoginApi {
                                                 return loginJson;
                                             }
                                         } else {
-                                            return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal 杂鱼喵~ ", response);
+                                            return ErrRes.NotFoundAccountException("This account has been banned for violating our User Agreement, please create a ticket to appeal ，Your BanID: "+banUserRepository.findBanIDByUid(uid)+"  杂鱼喵~ ", response);
                                     }
                                 } else {
                                     if (constMap.get(email) != null) {

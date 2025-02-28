@@ -52,6 +52,10 @@ spring:
 server:
   port: 8080
   address: localhost
+  ssl:
+    certificate: nyacat.cloud.crt
+    certificate-private-key: nyacat.cloud.key
+    trust-certificate: root_bundle.crt
 
 #NyanID配置
 NyanidSetting:

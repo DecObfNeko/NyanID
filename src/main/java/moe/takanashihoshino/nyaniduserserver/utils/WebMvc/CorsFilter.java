@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class CorsFilter implements Filter {
         response.addHeader("Access-Control-Allow-Headers", "LoginForWeb, Event, Authorization, Content-Type, Content-Length, auth-token, Accept, X-Requested-With`");
         // 返回结果可以用于缓存的最长时间，单位是秒。-1表示禁用
         response.addHeader("Access-Control-Max-Age", "36000");
+
 
         // 跨域预检请求，直接返回
         if (REQUEST_OPTIONS.equalsIgnoreCase(request.getMethod())) {

@@ -1,4 +1,4 @@
-package moe.takanashihoshino.nyaniduserserver.server.mc.YggdrasilServerJson;
+package moe.takanashihoshino.nyaniduserserver.server.ygg.YggdrasilServerJson;
 
 public class YggdrasilServerJsonLinks {
     private String homepage;

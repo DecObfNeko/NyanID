@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -30,7 +32,11 @@ public class OtherUtils {
         }
         return flt.toString();
     }
-
+    public static boolean isDaysBefore(LocalDateTime targetDateTime, int days) {
+        LocalDate cutoffDate = LocalDate.now().minusDays(days);
+        LocalDateTime cutoffDateTime = cutoffDate.atStartOfDay();
+        return !targetDateTime.isBefore(cutoffDateTime);
+    }
     public static int RandomIntNumberW() {
         Random random = new Random();
         return random.nextInt(90) + 10;

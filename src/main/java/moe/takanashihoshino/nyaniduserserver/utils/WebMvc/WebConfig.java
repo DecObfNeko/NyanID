@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -37,5 +38,5 @@ public class WebConfig implements WebMvcConfigurer {
 //                .allowCredentials(true) // 是否允许发送cookie
 //                .exposedHeaders(HttpHeaders.SET_COOKIE).exposedHeaders("*");
 //    }
-
 }
+

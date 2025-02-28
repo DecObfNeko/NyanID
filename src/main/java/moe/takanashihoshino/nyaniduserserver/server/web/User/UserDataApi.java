@@ -70,6 +70,9 @@ public class UserDataApi {
                                 }else return ErrRes.IllegalRequestException("username is already exist  MiaoWu~",response);
                             }else return ErrRes.IllegalRequestException("username is invalid  MiaoWu~",response);
                         }
+                        case "2" :{//更改简介
+                            String description = a.getString("description");
+                        }
 
             default:
                 return ErrRes.IllegalRequestException("RequestBody action is invalid  MiaoWu~",response);

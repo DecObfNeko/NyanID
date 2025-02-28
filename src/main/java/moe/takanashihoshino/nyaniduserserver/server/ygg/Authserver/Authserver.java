@@ -1,4 +1,4 @@
-package moe.takanashihoshino.nyaniduserserver.server.mc.Authserver;
+package moe.takanashihoshino.nyaniduserserver.server.ygg.Authserver;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;

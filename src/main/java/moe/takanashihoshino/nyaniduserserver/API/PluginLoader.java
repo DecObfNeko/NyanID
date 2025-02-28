@@ -1,12 +1,9 @@
 package moe.takanashihoshino.nyaniduserserver.API;
 
 
-import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
@@ -24,11 +21,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
+
 @Component
 public class PluginLoader implements  ApplicationListener<ContextClosedEvent>, InitializingBean {
 
     private static final String PLUGINS_DIR = "plugins";
     private static final Logger logger = Logger.getLogger("NyanID");
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -41,7 +40,7 @@ public class PluginLoader implements  ApplicationListener<ContextClosedEvent>, I
                     plugin.onLoad();
 
                 } else {
-                    logger.warning("Failed to load plugin.");
+                    logger.warning("Failed to load plugin." );
                 }
             }
         }else{

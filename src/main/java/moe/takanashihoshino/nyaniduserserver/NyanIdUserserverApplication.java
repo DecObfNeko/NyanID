@@ -1,15 +1,11 @@
 package moe.takanashihoshino.nyaniduserserver;
 
-import moe.takanashihoshino.nyaniduserserver.API.PluginLoader;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +16,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 @SpringBootApplication
+@EnableScheduling
 public class NyanIdUserserverApplication {
     public static  Path configPath = Paths.get("config");
     public static  Path DataPath = Paths.get("Data");

@@ -8,6 +8,7 @@ import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.OAuthAppRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,16 +38,13 @@ public class GetServerInfo {
     private  String EventID = "ServerInfo";
 
     @GetMapping(produces = "application/json")
-    public Object GetServerINFO(HttpServletResponse response, HttpServletRequest request) {
-
+    public Object GetServerINFO(HttpServletResponse response) {
         String AllUser = accountsRepository.GetAllUser();
-//        String BannedUser = accountsRepository.GetAllBannedUser();
         String GetAllApplication = oAuthAppRepository.GetAllApplication();
         int NumberOfEvents = redisService.getAll();
         JSONObject data = new JSONObject();
         data.put("AllUser",AllUser);
         data.put("msg",msg[(int) (random() * msg.length)]);
-//        data.put("BannedUser",BannedUser);
         if(redisService.getValue("ServerInfo") != null){
             JSONObject Notification = JSONObject.parseObject(redisService.getValue("ServerInfo").toString());
             data.put("Notification", true);
@@ -58,7 +56,6 @@ public class GetServerInfo {
         }
         data.put("AllApplication",GetAllApplication);
         data.put("NumberOfEvents",NumberOfEvents/6);
-        System.out.println(request.getRemoteAddr());
         response.setStatus(200);
         return data;
     }

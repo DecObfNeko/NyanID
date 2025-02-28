@@ -13,6 +13,7 @@ import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.UUIDHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.InvalidKeyException;
@@ -44,6 +45,7 @@ public class RegisterApi {
 
     public String EventID = "RegEvent1";
 
+    @Async
     @PostMapping
     public <T> Object RequestPost(@RequestBody(required = false) T data, HttpServletResponse response,HttpServletRequest request) throws NoSuchAlgorithmException, InvalidKeyException {
         if (EnableUserRegister) {
@@ -79,6 +81,7 @@ public class RegisterApi {
                                         json.put("username", username);
                                         json.put("password", lockpwd);
                                         redisService.setValueWithExpiration(VerificationCode, json, 300, TimeUnit.SECONDS);
+                                        redisService.setValueWithExpiration(String.valueOf(Event), "111", 800, TimeUnit.SECONDS);
                                         SJson sJson = new SJson();
                                         sJson.setMessage("请前往邮箱验证然后完成注册,注意,链接有效期只有5分钟,请尽快验证喵!");
                                         sJson.setStatus(200);

@@ -17,4 +17,5 @@ public interface BanUserRepository extends JpaRepository<BanUserList, String>,Se
     @Query(value = "SELECT BanID FROM  BanUserList WHERE uid = ?1 AND isActive = true ")
    String findBanIDByUid(String uid);
 
+
 }
