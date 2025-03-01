@@ -19,7 +19,6 @@ public class ScheduledTask {
     private  UserDevicesRepository userDeviceRepository;
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
-    @Async
     public void asyncTask() {
         LocalDateTime cutoffDateTime = LocalDateTime.now()
                 .minusDays(7)

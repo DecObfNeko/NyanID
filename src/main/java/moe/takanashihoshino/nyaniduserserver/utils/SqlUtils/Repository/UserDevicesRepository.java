@@ -39,8 +39,8 @@ public interface UserDevicesRepository extends JpaRepository<UserDevices, String
 
     @Transactional
     @Modifying
-    @Query("DELETE FROM UserDevices u WHERE u.CreateTime < :cutoffDateTime AND u.hwid = null")
-    void deleteByCreateTimeBefore(@Param("cutoffDateTime") LocalDateTime cutoffDateTime);
+    @Query("DELETE FROM UserDevices u WHERE  u.CreateTime < :cutoffDateTime")
+    int deleteByCreateTimeBefore(@Param("cutoffDateTime") LocalDateTime cutoffDateTime);
 
 
 }
