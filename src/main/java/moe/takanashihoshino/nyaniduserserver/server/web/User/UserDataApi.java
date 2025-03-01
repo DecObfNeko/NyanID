@@ -14,6 +14,7 @@ import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +41,7 @@ public class UserDataApi {
     @Autowired
     private EmailService emailService;
 
-
+    @Async
     @PostMapping(produces = "application/json")
     public <T> Object PostMethod(@RequestBody(required = false) T data, HttpServletResponse response, HttpServletRequest request){
         String Authorization = request.getHeader("Authorization");
@@ -48,9 +49,9 @@ public class UserDataApi {
         String uid = userDevicesRepository.findUidByToken(Token);
         if (data != null){
            JSONObject a = JSONObject.parseObject(JSONObject.toJSONString(data));
-           String Action = a.getString("action");
+           int Action = a.getIntValue("action");
         switch (Action){
-                        case "0" :{//设置昵称
+                        case 0 :{//设置昵称
                             String NICKNAME = a.getString("nickname");
                             if (NICKNAME != null && NICKNAME.length() > 2){
                                 if (!Objects.equals(nyanIDuserRepository.getNickname(uid), NICKNAME)){
@@ -60,7 +61,7 @@ public class UserDataApi {
                                 }else return ErrRes.IllegalRequestException("The nickname is the same as in the server  MiaoWu~",response);
                             }else return ErrRes.IllegalRequestException("nickname is invalid  MiaoWu~",response);
                         }
-                        case "1" :{//更改用户名
+                        case 1 :{//更改用户名
                             String username = a.getString("username");
                             if (username != null && username.length() > 5 && username.matches(".*[A-Za-z0-9]")) {
                                 if (accountsRepository.findByUsername(username) == null){
@@ -70,9 +71,14 @@ public class UserDataApi {
                                 }else return ErrRes.IllegalRequestException("username is already exist  MiaoWu~",response);
                             }else return ErrRes.IllegalRequestException("username is invalid  MiaoWu~",response);
                         }
-                        case "2" :{//更改简介
+                        case 2 :{//更改简介
                             String description = a.getString("description");
+                            if (description != null && description.length() > 2 && description.length() < 100){
+                                nyanIDuserRepository.SetDescriptionByUid(description,uid);
+                                return success("Setting description success MiaoWu~",200);
+                            }else return ErrRes.IllegalRequestException("description is invalid  MiaoWu~",response);
                         }
+
 
             default:
                 return ErrRes.IllegalRequestException("RequestBody action is invalid  MiaoWu~",response);
@@ -115,6 +121,7 @@ public class UserDataApi {
         return JSONObject.toJSONString(error);
     }
 
+    @Async
     public void SaveUserAvatar(String uid, MultipartFile avatar) throws IOException {
         Path UserAvatar = Paths.get("Data/UserAvatar/UA-");
         File originalFile = new File(UserAvatar+uid+".png");

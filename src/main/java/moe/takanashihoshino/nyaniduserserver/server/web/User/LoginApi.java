@@ -117,7 +117,7 @@ public class LoginApi {
                                                 userDevices.setDeviceID(DevicesID);
                                                 userDevices.setDeviceName(DevicesName);
                                                 userDevices.setToken(token);
-                                                userDevices.setHwid(IP);
+                                                userDevices.setIp(IP);
                                                 userDevices.setIsActive(true);
                                                 userDevices.setSession(session);
                                                 userDevices.setClientid(clientid);
