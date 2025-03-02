@@ -16,5 +16,9 @@ public class UUIDHelper {
         return String.valueOf(UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)));
     }
 
+    public static String generatesessionid(String sid){
+        return String.valueOf(UUID.nameUUIDFromBytes(("BungeeServer:" + sid).getBytes(StandardCharsets.UTF_8)));
+    }
+
 
 }
