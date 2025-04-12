@@ -8,26 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 @Repository
 public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>, Serializable {
 
-    @Query(value = "SELECT nickname FROM NyanIDuser where uid = ?1")
-    String getNickname(String uid);
-
-    @Query(value = "SELECT exp FROM NyanIDuser where uid = ?1")
-    int getUserEXP(String uid);
-
-    @Query(value = "SELECT Description FROM NyanIDuser where uid = ?1")
-    String GetDescriptionByUid(String uid);
+    @Query(value = "SELECT * FROM nyaniduser where uid = ?1",nativeQuery = true)
+    NyanIDuser getUser(String uid);
 
     @Modifying
     @Transactional
     @Query(value = "update NyanIDuser set Description = ?1  where uid = ?2")
     void SetDescriptionByUid(String Description,String uid);
 
-    @Query(value = "SELECT IsDeveloper FROM NyanIDuser where uid = ?1")
-    boolean UserIsDeveloper(String uid);
 
 
     @Modifying

@@ -2,7 +2,8 @@ package moe.takanashihoshino.nyaniduserserver.server.web.Public;
 
 
 import com.alibaba.fastjson2.JSONObject;
-import jakarta.servlet.http.HttpServletResponse;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Accounts;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.NyanIDuser;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.BanUserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
@@ -12,6 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/zako/v2/userinfo/{uuid}")
@@ -29,20 +34,17 @@ public class GetPublicUserInfo {
     @GetMapping(produces = "application/json")
     public Object GETMethod(@PathVariable String uuid) {
         if (banUserRepository.findBanIDByUid(uuid) == null ) {
-        String uid = accountsRepository.findByuid(uuid);
-        String nickname = nyanIDuserRepository.getNickname(uid);
-        int exp = nyanIDuserRepository.getUserEXP(uid);
-        Boolean isDeveloper = nyanIDuserRepository.UserIsDeveloper(uid) ? true : false;
-        String Description = nyanIDuserRepository.GetDescriptionByUid(uid);
-        String Username = accountsRepository.GetUsernameByUid(uid);
-
+        Accounts accounts = accountsRepository.GetUser(uuid);
+        NyanIDuser user = nyanIDuserRepository.getUser(accounts.getUid());
+        int exp = user.getExp();
+        Boolean isDeveloper = user.isIsDeveloper() ? true : false;
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("nickname",nickname);
+        jsonObject.put("nickname",user.getNickname());
         jsonObject.put("exp",exp);
-        jsonObject.put("description",Description);
-        jsonObject.put("username",Username);
+        jsonObject.put("description",user.getDescription());
+        jsonObject.put("username",accounts.getUsername());
         jsonObject.put("isDeveloper",isDeveloper);
-        jsonObject.put("uid",uid);
+        jsonObject.put("uid",accounts.getUid());
         return jsonObject;
     }else {
             String banID = banUserRepository.findBanIDByUid(uuid);

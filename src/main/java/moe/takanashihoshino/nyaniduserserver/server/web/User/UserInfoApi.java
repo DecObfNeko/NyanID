@@ -4,6 +4,8 @@ package moe.takanashihoshino.nyaniduserserver.server.web.User;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Accounts;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.NyanIDuser;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
@@ -29,21 +31,23 @@ public class UserInfoApi {
             String Authorization = request.getHeader("Authorization");
             String Token = Authorization.replace("Bearer ", "").replace(" ", "");
             String uid = userDevicesRepository.findUidByToken(Token);
-            String nickname = nyanIDuserRepository.getNickname(uid);
-            int exp = nyanIDuserRepository.getUserEXP(uid);
-            Boolean isDeveloper = nyanIDuserRepository.UserIsDeveloper(uid) ? true : false;
-            String email = accountsRepository.GetEmailByUid(uid);
-            String Description = nyanIDuserRepository.GetDescriptionByUid(uid);
-            String Username = accountsRepository.GetUsernameByUid(uid);
-
+            Accounts accounts = accountsRepository.GetUser(uid);
+            NyanIDuser user = nyanIDuserRepository.getUser(uid);
+            int exp = user.getExp();
+            Boolean isDeveloper =user.isIsDeveloper() ? true : false;
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("nickname",nickname);
+            jsonObject.put("nickname",user.getNickname());
             jsonObject.put("exp",exp);
-            jsonObject.put("description",Description);
-            jsonObject.put("username",Username);
+            jsonObject.put("description",user.getDescription());
+            jsonObject.put("username",accounts.getUsername());
             jsonObject.put("isDeveloper",isDeveloper);
-            jsonObject.put("email",email);
+            jsonObject.put("email",accounts.getEmail());
             jsonObject.put("uid",uid);
+            if (accounts.getBind() != null){
+                String MCUUID = accounts.getBind();
+                jsonObject.put("bma",true);
+                jsonObject.put("mcuid",MCUUID);
+            }
             return jsonObject;
 
 

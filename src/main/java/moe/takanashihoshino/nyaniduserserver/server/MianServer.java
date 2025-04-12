@@ -1,8 +1,11 @@
 package moe.takanashihoshino.nyaniduserserver.server;
 
+import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.SJson;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
+import moe.takanashihoshino.nyaniduserserver.websocket.Messages.BungeeSuccessConnect;
+import moe.takanashihoshino.nyaniduserserver.websocket.server.BungeeConnectHandle;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +24,7 @@ public class MianServer {
         sJson.setStatus(200);
         sJson.setMessage("Ok!");
         sJson.setTimestamp(LocalDateTime.now());
+        BungeeConnectHandle.sendMessage(JSONObject.toJSONString(sJson));
         return  sJson;
     }
     @GetMapping
@@ -30,6 +34,7 @@ public class MianServer {
         sJson.setStatus(200);
         sJson.setMessage("Ok!");
         sJson.setTimestamp(LocalDateTime.now());
+        BungeeConnectHandle.sendMessage(JSONObject.toJSONString(sJson));
         return  sJson;
     }
 }

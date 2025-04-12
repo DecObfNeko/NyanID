@@ -35,31 +35,20 @@ public class AuthenticateCheck implements HandlerInterceptor {
     @Autowired
     private UserDevicesRepository userDevicesRepository;
 
-    @Autowired
-    private RedisService redisService;
-
-    private String EventID = "Se1";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String Authorization = request.getHeader("Authorization");
         String getEvent = request.getHeader("Event");
-        String session = request.getSession().getId();
-        String ip = request.getRemoteAddr();
         String RequestMode = request.getMethod();
         if (Authorization != null && getEvent != null){
             String Token = Authorization.replace("Bearer ", "").replace(" ", "");
             if (userDevicesRepository.findUidByToken(Token) != null){
                 String uid = userDevicesRepository.findUidByToken(Token);
-                String ClientID =userDevicesRepository.findClientIdByToken(Token);
                 if (banUserRepository.findBanIDByUid(uid) == null) {
                     switch (getEvent) {
                         case "Ua"://上传头像 PUT
                             if (Objects.equals(RequestMode, "PUT")) {
-                                if (!CheckSession(uid)) {
-                                    addSession(session, uid, ClientID, ip);
-                                    break;
-                                }
                                 break;
                             } else {
                                 PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
@@ -67,10 +56,7 @@ public class AuthenticateCheck implements HandlerInterceptor {
                             }
                         case "Ud"://上传数据 POST
                             if (Objects.equals(RequestMode, "POST")) {
-                                if (!CheckSession(uid)) {
-                                    addSession(session, uid, ClientID, ip);
-                                    break;
-                                }
+
                                 break;
                             } else {
                                 PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
@@ -78,10 +64,6 @@ public class AuthenticateCheck implements HandlerInterceptor {
                             }
                         case "Gi"://获取信息 GET
                             if (Objects.equals(RequestMode, "GET")) {
-                                if (!CheckSession(uid)) {
-                                    addSession(session, uid, ClientID, ip);
-                                    break;
-                                }
                                 break;
                             } else {
                                 PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
@@ -106,25 +88,6 @@ public class AuthenticateCheck implements HandlerInterceptor {
             PrintWriter(response,Err(ErrorCode.Unauthorized.getCode(),ErrorCode.Unauthorized.getMessage(),"Zako~Authentication failed, invalid token MiaoWu~"), 401);
             return false;
         }
-    }
-
-
-    public boolean CheckSession(String uid){
-        JSONObject e = new JSONObject();
-        e.put(EventID,uid);
-        return redisService.getValue(String.valueOf(e)) != null;
-    }
-
-    public void addSession(String session,String uid,String clientID,String ip){
-        JSONObject i = new JSONObject();
-        i.put(EventID,session);
-        i.put("ip",ip);
-        if (clientID != null) {
-            i.put("clientid", clientID);
-        }
-        JSONObject e = new JSONObject();
-        e.put(EventID,uid);
-        redisService.setValueWithExpiration(String.valueOf(e),String.valueOf(i),3,java.util.concurrent.TimeUnit.DAYS);
     }
 
     public void PrintWriter(HttpServletResponse response,Error error,int code) throws IOException {

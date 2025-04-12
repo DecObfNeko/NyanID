@@ -8,6 +8,9 @@ import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrorCode;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.SJson;
+import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Accounts;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.NyanIDuser;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuserRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
@@ -41,12 +44,17 @@ public class UserDataApi {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private RedisService redisService;
+
     @Async
     @PostMapping(produces = "application/json")
     public <T> Object PostMethod(@RequestBody(required = false) T data, HttpServletResponse response, HttpServletRequest request){
         String Authorization = request.getHeader("Authorization");
         String Token = Authorization.replace("Bearer ", "").replace(" ", "");
         String uid = userDevicesRepository.findUidByToken(Token);
+        NyanIDuser user = nyanIDuserRepository.getUser(uid);
+        Accounts accounts = accountsRepository.GetUser(uid);
         if (data != null){
            JSONObject a = JSONObject.parseObject(JSONObject.toJSONString(data));
            int Action = a.getIntValue("action");
@@ -54,7 +62,7 @@ public class UserDataApi {
                         case 0 :{//设置昵称
                             String NICKNAME = a.getString("nickname");
                             if (NICKNAME != null && NICKNAME.length() > 2){
-                                if (!Objects.equals(nyanIDuserRepository.getNickname(uid), NICKNAME)){
+                                if (!Objects.equals(user.getNickname(), NICKNAME)){
                                     nyanIDuserRepository.UpdateNickname(NICKNAME,uid);
                                     response.setStatus(200);
                                     return success("Setting nickname success MiaoWu~",200);
@@ -64,7 +72,7 @@ public class UserDataApi {
                         case 1 :{//更改用户名
                             String username = a.getString("username");
                             if (username != null && username.length() > 5 && username.matches(".*[A-Za-z0-9]")) {
-                                if (accountsRepository.findByUsername(username) == null){
+                                if (accounts == null){
                                     accountsRepository.UpdateUsername(username,uid);
                                     emailService.NotificationEmail(accountsRepository.GetEmailByUid(uid),request.getRemoteAddr(),"Change username",uid);
                                     return success("Setting username success MiaoWu~",200);
@@ -77,6 +85,22 @@ public class UserDataApi {
                                 nyanIDuserRepository.SetDescriptionByUid(description,uid);
                                 return success("Setting description success MiaoWu~",200);
                             }else return ErrRes.IllegalRequestException("description is invalid  MiaoWu~",response);
+                        }
+                        case 3 :{//bind mc
+                                    String code = a.getString("code");
+                                    if (!a.getString("code").isEmpty()){
+                                        Object UUID = redisService.getValue(code);
+                                        if (UUID != null){
+                                            accountsRepository.BindMinecraftAccount(UUID.toString(), uid);
+                                            redisService.deleteValue(code);
+                                            SJson s = new SJson();
+                                            s.setStatus(200);
+                                            s.setMessage("绑定成功喵~,uuid: "+UUID);
+                                            s.setTimestamp(LocalDateTime.now());
+                                            return JSONObject.toJSONString(s);
+                                        }else return ErrRes.NotFoundAccountException("无效的绑定码杂鱼喵~",response);
+                                    }else return ErrRes.IllegalRequestException("code is invalid  MiaoWu~",response);
+
                         }
 
 

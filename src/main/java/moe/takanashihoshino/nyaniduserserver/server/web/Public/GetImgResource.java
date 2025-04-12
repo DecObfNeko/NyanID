@@ -44,6 +44,7 @@ public class GetImgResource {
                 case "":
 
 
+
                 default:
                     return ErrRes.NotFoundResourceException("Not Found Resource", response);
 

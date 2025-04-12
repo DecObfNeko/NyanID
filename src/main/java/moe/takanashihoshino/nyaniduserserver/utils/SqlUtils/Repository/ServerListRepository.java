@@ -16,6 +16,8 @@ public interface ServerListRepository extends JpaRepository<ServerList, String>,
     @Query(value = "SELECT Token FROM ServerList WHERE ServerUid = ?1")
     String findTokenByServerUid(String ServerUid);
 
+    @Query(value = "SELECT SKey FROM ServerList WHERE ServerUid = ?1")
+    String findSKeyByServerUid(String ServerUid);
 
 
 
