@@ -16,6 +16,7 @@ import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.NyanIDuse
 import moe.takanashihoshino.nyaniduserserver.utils.EmailHelper.EmailService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
+import moe.takanashihoshino.nyaniduserserver.websocket.server.BungeeConnectHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +98,11 @@ public class UserDataApi {
                                             s.setStatus(200);
                                             s.setMessage("绑定成功喵~,uuid: "+UUID);
                                             s.setTimestamp(LocalDateTime.now());
+                                            ResBind resBind = new ResBind();
+                                            resBind.setPacket("S01");
+                                            resBind.setUuid(UUID.toString());
+                                            resBind.setNuid(accounts.getUid());
+                                            BungeeConnectHandle.sendMessage(JSONObject.toJSONString(resBind));
                                             return JSONObject.toJSONString(s);
                                         }else return ErrRes.NotFoundAccountException("无效的绑定码杂鱼喵~",response);
                                     }else return ErrRes.IllegalRequestException("code is invalid  MiaoWu~",response);
