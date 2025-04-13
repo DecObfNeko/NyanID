@@ -11,9 +11,12 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import moe.takanashihoshino.nyaniduserserver.utils.Config;
 import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Accounts;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.ServerListRepository;
 import moe.takanashihoshino.nyaniduserserver.websocket.Messages.BungeeSuccessConnect;
 import moe.takanashihoshino.nyaniduserserver.websocket.Messages.UpdateOnlineSuccess;
+import moe.takanashihoshino.nyaniduserserver.websocket.packet.S32;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,7 +37,7 @@ public class BungeeConnectHandle implements ApplicationContextAware {
     private static RedisService redisService;
     private static Config config;
 
-    // 实例计数器与集合
+    private static AccountsRepository accountsRepository;
     private static AtomicInteger onlineCount = new AtomicInteger(0);
     private static CopyOnWriteArraySet<BungeeConnectHandle> webSocketSet = new CopyOnWriteArraySet<>();
 
@@ -45,6 +48,7 @@ public class BungeeConnectHandle implements ApplicationContextAware {
         // 静态字段通过应用上下文初始化
         serverListRepository = applicationContext.getBean(ServerListRepository.class);
         redisService = applicationContext.getBean(RedisService.class);
+        accountsRepository = applicationContext.getBean(AccountsRepository.class);
         config = applicationContext.getBean(Config.class);
     }
 
@@ -86,6 +90,7 @@ public class BungeeConnectHandle implements ApplicationContextAware {
     public void onMessage(String message, Session session) throws IOException {
         if (isValidJsonStrict(message)){
         String packet = JSONObject.parseObject(message).getString("packet");
+        String u = JSONObject.parseObject(message).getString("uuid");
         log.info("收到BungeeCord消息: {}", packet);
         switch (packet){
             case "S29":
@@ -118,6 +123,25 @@ public class BungeeConnectHandle implements ApplicationContextAware {
                    closeSession(session,closeReason);
                    log.error("处理绑定Minecraft账号时异常, {}", e.getMessage());
                }
+                break;
+            case "C32"://check bind
+                try {
+                    Accounts accounts = accountsRepository.GetUser(""+u);
+                    S32 s32 = new S32();
+                    if (accounts == null){
+                        s32.setBind(false);
+                    }else {
+                        s32.setBind(true);
+                        s32.setMuid(accounts.getBind());
+                        s32.setUuid(accounts.getUid());
+                        s32.setUsername(accounts.getUsername());
+                    }
+                    session.getBasicRemote().sendText(JSONObject.toJSONString(s32));
+                }catch (Exception e){
+                    CloseReason closeReason = new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR,  "10001");
+                    closeSession(session,closeReason);
+                    log.error("处理绑定Minecraft账号时异常, {}", e.getMessage());
+                }
                 break;
 
 

@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface AccountsRepository extends JpaRepository<Accounts, String>, Serializable {
 
-    @Query(value = "SELECT * FROM accounts WHERE uid = ?1 or email = ?1 or username = ?1 or bind=?1 ",nativeQuery = true)
+    @Query(value = "SELECT * FROM accounts WHERE uid = ?1 or email = ?1 or username = ?1 or bind = ?1 ",nativeQuery = true)
     Accounts GetUser(String info);
 
     @Query(value = "SELECT uid FROM Accounts WHERE uid = ?1 or email = ?1 or username = ?1")
