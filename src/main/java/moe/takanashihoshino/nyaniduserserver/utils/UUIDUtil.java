@@ -3,7 +3,7 @@ package moe.takanashihoshino.nyaniduserserver.utils;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class UUIDHelper {
+public class UUIDUtil {
     public static String generateUUID(String name, String NyanID){
         return String.valueOf(UUID.nameUUIDFromBytes(("NyanCatPlayer:" + name+NyanID).getBytes(StandardCharsets.UTF_8)));
     }

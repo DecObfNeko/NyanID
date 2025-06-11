@@ -3,7 +3,9 @@ package moe.takanashihoshino.nyaniduserserver.API;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +22,6 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
-
 
 @Component
 public class PluginLoader implements  ApplicationListener<ContextClosedEvent>, InitializingBean {

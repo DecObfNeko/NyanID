@@ -4,8 +4,6 @@ import moe.takanashihoshino.nyaniduserserver.server.web.Public.UserResponse;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Accounts;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +16,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl  implements UserService {
 
-    @Autowired
-    private AccountsRepository accountsRepository;
 
-    @Value("${NyanidSetting.HOST}")
-    private String Host;
+    private final AccountsRepository accountsRepository;
+
+    public UserServiceImpl(AccountsRepository accountsRepository) {
+        this.accountsRepository = accountsRepository;
+    }
 
     @Override
     public Accounts save(Accounts accounts) {

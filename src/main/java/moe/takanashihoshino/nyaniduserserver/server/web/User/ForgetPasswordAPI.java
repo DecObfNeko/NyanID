@@ -23,18 +23,19 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("api/zako/v1/forgetpwd")
-public class ForgetPwdApi {
+public class ForgetPasswordAPI {
 
+private final AccountsRepository accountsRepository;
+private final EmailService emailService;
+private final RedisService redisService;
 
-@Autowired
-public NyanIDuserRepository nyanIDuserRepository;
-@Autowired
-public AccountsRepository accountsRepository;
-@Autowired
-public EmailService emailService;
-@Autowired
-public RedisService redisService;
-public String EventID = "FP1";
+    public ForgetPasswordAPI(AccountsRepository accountsRepository, EmailService emailService, RedisService redisService) {
+        this.accountsRepository = accountsRepository;
+        this.emailService = emailService;
+        this.redisService = redisService;
+    }
+
+    public String EventID = "FP1";
 
 @Value("${NyanidSetting.encryptionKey}")
 private String encryptionKey;

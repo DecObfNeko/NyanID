@@ -8,15 +8,26 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
 
 @Repository
 public interface NyanIDuserRepository extends JpaRepository<NyanIDuser, String>, Serializable {
 
-    @Query(value = "SELECT * FROM nyaniduser where uid = ?1",nativeQuery = true)
+    @Query(value = "SELECT n FROM NyanIDuser n where n.uid = ?1")
     NyanIDuser getUser(String uid);
+
+    @Query(value = "SELECT u.IsGIFAvatar FROM NyanIDuser u Where u.uid = ?1")
+    Boolean IsGIFAvatar(String uid);
+
+    @Query(value = "SELECT u.GIFAvatarID FROM NyanIDuser u Where u.uid = ?1")
+    int GIFAvatarID(String uid);
+
+    @Query(value = "SELECT u.EnableGIFAvatar FROM NyanIDuser u Where u.uid = ?1")
+    Boolean EnableGIFAvatar(String uid);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update NyanIDuser set EnableGIFAvatar = ?1  where uid = ?2")
+    void UpdateEnableGIFAvatar(Boolean d,String uid);
 
     @Modifying
     @Transactional

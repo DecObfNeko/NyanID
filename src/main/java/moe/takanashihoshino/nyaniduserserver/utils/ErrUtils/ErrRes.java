@@ -1,6 +1,7 @@
 package moe.takanashihoshino.nyaniduserserver.utils.ErrUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Ygg.ErrorResponse;
 
 import java.time.LocalDateTime;
 
@@ -64,14 +65,13 @@ public class ErrRes {
         return error;
     }
 
-    public static Error UnauthorizedException(String message, HttpServletResponse response){
-        response.setStatus(ErrorCode.Unauthorized.getCode());
-        Error error = new Error();
-        error.setStatus(ErrorCode.Unauthorized.getCode());
-        error.setError(ErrorCode.Unauthorized.getMessage());
-        error.setMessage(message);
-        error.setTimestamp(LocalDateTime.now());
-        return error;
+    public static ErrorResponse YggdrasilError(String message, String error ,String cause,int code,HttpServletResponse response){
+        response.setStatus(code);
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setErrorMessage(message);
+        errorResponse.setError(error);
+        errorResponse.setCause(cause);
+        return errorResponse;
     }
 
     public static Error Dimples1337Exception(String message, HttpServletResponse response){

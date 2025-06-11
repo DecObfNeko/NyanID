@@ -26,5 +26,9 @@ public class NyanIDuser implements Serializable {
 
     private String nickname;
 
+    private Boolean IsGIFAvatar;
 
+    private Boolean EnableGIFAvatar;
+
+    private int GIFAvatarID;
 }

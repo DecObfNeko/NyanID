@@ -18,16 +18,16 @@ public class Yggdrasil implements Serializable {
     @Column(columnDefinition="varchar(150)",nullable = false)
     private String uuid;
 
-    @Column
+    private Boolean useSkin;
+
+    private Boolean useCAPE;
+
+    @Column(columnDefinition="varchar(20)",nullable = false)
     private String playername;
 
     @Column(columnDefinition="varchar(150)",nullable = false)
     private String nyanuid;
 
-    @Column(columnDefinition="text")
-    private String accessToken;
-
-    @Column
-    private String type;
+    private int type;
 
 }

@@ -11,12 +11,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Repository
 public interface AccountsRepository extends JpaRepository<Accounts, String>, Serializable {
 
-    @Query(value = "SELECT * FROM accounts WHERE uid = ?1 or email = ?1 or username = ?1 or bind = ?1 ",nativeQuery = true)
+    @Query(value = "SELECT a FROM Accounts a WHERE a.uid = ?1 or a.email = ?1 or a.username = ?1 or a.bind = ?1 ")
     Accounts GetUser(String info);
 
     @Query(value = "SELECT uid FROM Accounts WHERE uid = ?1 or email = ?1 or username = ?1")
@@ -32,13 +31,23 @@ public interface AccountsRepository extends JpaRepository<Accounts, String>, Ser
     String LoginByEmail(String email);
 
     @Query(value = "SELECT COUNT(*) AS nums FROM Accounts ")
-    String GetAllUser();
+    int GetAllUser();
 
 
     @Modifying
     @Transactional
     @Query(value = "update Accounts set username = ?1 where uid = ?2")
     void UpdateUsername(String username,String uid);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update Accounts set SecretKey = ?1 where uid = ?2")
+    void UpdateSecretKey(String SecretKey,String uid);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update Accounts set SecretKey = null where uid = ?1")
+    void DeleteSecretKey(String uid);
 
     @Modifying
     @Transactional

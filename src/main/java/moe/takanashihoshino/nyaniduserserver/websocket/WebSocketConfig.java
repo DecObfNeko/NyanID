@@ -1,6 +1,7 @@
 package moe.takanashihoshino.nyaniduserserver.websocket;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @Configuration
+@ConditionalOnWebApplication
 public class WebSocketConfig implements ApplicationContextAware {
 
     private static ApplicationContext context;
@@ -22,7 +24,7 @@ public class WebSocketConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public ServerEndpointExporter serverEndpointExporter() {
-        return new ServerEndpointExporter();
+    public ServerEndpointExporter serverEndpointExporter() throws InstantiationException, IllegalAccessException {
+        return new ServerEndpointExporter().getClass().newInstance();
     }
 }

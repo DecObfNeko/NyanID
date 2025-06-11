@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrRes;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.impl.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +14,11 @@ import java.util.List;
 @RequestMapping("api/zako/v2/searchuser")
 public class SearchUser {
 
-    @Autowired
-    private UserServiceImpl userService;
+    private final UserServiceImpl userService;
+
+    public SearchUser(UserServiceImpl userService) {
+        this.userService = userService;
+    }
 
     @PostMapping(produces = "application/json")
     public <T> Object SearchUserApi(@RequestBody(required = false) T data, HttpServletResponse response, HttpServletRequest request){

@@ -8,7 +8,10 @@ public enum ErrorCode {
     MethodNotAllowed(405,"Method Not Allowed"),
     Unauthorized(401,"Unauthorized"),
     Dimples1337(999,"Don't Hacking,Fuck You!"),
-    NotFoundResource(404,"Not Found Resource");
+    NotFoundResource(404,"Not Found Resource"),
+    ForbiddenOperationException(403,"ForbiddenOperationException"),
+
+    IllegalArgumentException(400,"IllegalArgumentException");
 
     private final int code;
     private final String message;

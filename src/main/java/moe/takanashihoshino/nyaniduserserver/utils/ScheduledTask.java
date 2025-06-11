@@ -1,29 +1,45 @@
 package moe.takanashihoshino.nyaniduserserver.utils;
 
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.logging.Logger;
 
 
 @Component
 public class ScheduledTask {
 
-    @Autowired
-    private  UserDevicesRepository userDeviceRepository;
-    @Scheduled(cron = "0 0 * * * *")
+
+    private final UserDevicesRepository userDeviceRepository;
+
+    public ScheduledTask(UserDevicesRepository userDeviceRepository) {
+        this.userDeviceRepository = userDeviceRepository;
+    }
+
+    @Scheduled(cron = "30 * * * * *")
     @Transactional
     public void asyncTask() {
         LocalDateTime cutoffDateTime = LocalDateTime.now()
-                .minusDays(7)
+                .minusDays(3)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         userDeviceRepository.deleteByCreateTimeBefore(cutoffDateTime);
+    }
+    @Scheduled(cron = "30 * * * * *")
+    @Transactional
+    public void asyncTask1() {
+        LocalDateTime cutoffDateTime = LocalDateTime.now()
+                .minusDays(2)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        userDeviceRepository.SetNosDevices(cutoffDateTime);
+    }
+    @Scheduled(cron = "0 0 * * * *")
+    @Transactional
+    public void asyncTask2() {
+
     }
 }

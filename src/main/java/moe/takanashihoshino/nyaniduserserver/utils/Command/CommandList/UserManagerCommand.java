@@ -4,17 +4,11 @@ import moe.takanashihoshino.nyaniduserserver.utils.Command.Command;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.BanUserList;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.BanUserRepository;
-import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.BanUserService;
-import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Service.UserDevicesService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -22,22 +16,26 @@ import java.util.logging.Logger;
 public class UserManagerCommand implements Command {
 
 
-    @Autowired
-    private AccountsRepository accountsRepository;
 
-    @Autowired
-    private UserDevicesRepository userDevicesRepository;
+    private final AccountsRepository accountsRepository;
 
-    @Autowired
-    private BanUserRepository banUserRepository;
 
-    @Autowired
-    private BanUserService banUserService;
+    private final BanUserRepository banUserRepository;
+
+
+    private final BanUserService banUserService;
 
 
 
 
     private static Logger logger = Logger.getLogger("NyanID");
+
+    public UserManagerCommand(AccountsRepository accountsRepository, BanUserRepository banUserRepository, BanUserService banUserService) {
+        this.accountsRepository = accountsRepository;
+        this.banUserRepository = banUserRepository;
+        this.banUserService = banUserService;
+    }
+
     @Override
     public String getName() {
         return "/ac";
@@ -62,6 +60,7 @@ public class UserManagerCommand implements Command {
                                 BanUserList banUserList = new BanUserList();
                                 banUserList.setBanID(banid);
                                 banUserList.setUid(uid);
+                                banUserList.setBannedBy("NAC");
                                 banUserList.setBanTime(LocalDateTime.now());
                                 if (args.length < 3){
                                     banUserList.setReason("This account has been banned for violating our User Agreement. 杂鱼喵~");

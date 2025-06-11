@@ -11,7 +11,7 @@ public interface Plugin {
 
     String PluginName();
 
-    UUID PluginUUID(String author, String version );
+    String PluginUUID(String author );
 
     Logger getLogger();
 }

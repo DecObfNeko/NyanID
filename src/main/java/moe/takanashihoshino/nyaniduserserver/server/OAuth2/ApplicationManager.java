@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("oauth2/api/zako/app")
-public class CApp {
+public class ApplicationManager {
 
     @PostMapping
     public Object PostMethod(@RequestBody JSONObject data, HttpServletResponse response, HttpServletRequest request) {

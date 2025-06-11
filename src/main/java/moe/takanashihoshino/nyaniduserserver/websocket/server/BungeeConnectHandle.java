@@ -9,12 +9,10 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
-import moe.takanashihoshino.nyaniduserserver.utils.Config;
 import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Accounts;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.AccountsRepository;
 import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.ServerListRepository;
-import moe.takanashihoshino.nyaniduserserver.websocket.Messages.BungeeSuccessConnect;
 import moe.takanashihoshino.nyaniduserserver.websocket.Messages.UpdateOnlineSuccess;
 import moe.takanashihoshino.nyaniduserserver.websocket.packet.S32;
 import org.springframework.beans.BeansException;
@@ -35,8 +33,6 @@ public class BungeeConnectHandle implements ApplicationContextAware {
 
     private static ServerListRepository serverListRepository;
     private static RedisService redisService;
-    private static Config config;
-
     private static AccountsRepository accountsRepository;
     private static AtomicInteger onlineCount = new AtomicInteger(0);
     private static CopyOnWriteArraySet<BungeeConnectHandle> webSocketSet = new CopyOnWriteArraySet<>();
@@ -49,7 +45,6 @@ public class BungeeConnectHandle implements ApplicationContextAware {
         serverListRepository = applicationContext.getBean(ServerListRepository.class);
         redisService = applicationContext.getBean(RedisService.class);
         accountsRepository = applicationContext.getBean(AccountsRepository.class);
-        config = applicationContext.getBean(Config.class);
     }
 
     @OnOpen
@@ -91,7 +86,6 @@ public class BungeeConnectHandle implements ApplicationContextAware {
         if (isValidJsonStrict(message)){
         String packet = JSONObject.parseObject(message).getString("packet");
         String u = JSONObject.parseObject(message).getString("uuid");
-        log.info("收到BungeeCord消息: {}", packet);
         switch (packet){
             case "S29":
                 sendHeartbeat();

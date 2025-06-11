@@ -21,7 +21,10 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(e.getMessage());
         errorResponse.setError("Bad Request");
         errorResponse.setTimestamp(LocalDateTime.now());
-        ErrorResponse error = new ErrorResponse(errorResponse.getError(),errorResponse.getMessage(),errorResponse.getTimestamp().toString());
+        ErrorResponse error = new ErrorResponse();
+        error.setError(errorResponse.getError());
+        error.setErrorMessage(errorResponse.getMessage());
+        error.setCause(errorResponse.getTimestamp().toString());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -32,7 +35,10 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(e.getMessage());
         errorResponse.setError("Internal Server Error");
         errorResponse.setTimestamp(LocalDateTime.now());
-        ErrorResponse error = new ErrorResponse(errorResponse.getError(),errorResponse.getMessage(),errorResponse.getTimestamp().toString());
+        ErrorResponse error = new ErrorResponse();
+        error.setError(errorResponse.getError());
+        error.setErrorMessage(errorResponse.getMessage());
+        error.setCause(errorResponse.getTimestamp().toString());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

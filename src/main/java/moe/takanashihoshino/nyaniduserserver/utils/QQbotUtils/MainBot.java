@@ -1,8 +1,6 @@
 package moe.takanashihoshino.nyaniduserserver.utils.QQbotUtils;
 
 
-import io.github.kloping.qqbot.Starter;
-import io.github.kloping.qqbot.api.Intents;
 import jakarta.annotation.PostConstruct;
 import moe.takanashihoshino.nyaniduserserver.utils.QQbotUtils.impl.onMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +32,16 @@ public class MainBot {
     @Async
     @PostConstruct
     public void runbot() {
-        if (isEnable) {
-            Starter starter = new Starter(appid, token, secret);
-            if (isSandbox) {
-                starter.getConfig().setSandbox(true);
-            }
-            starter.APPLICATION.logger.setOutFile(null);
-            starter.getConfig().setCode(Intents.PUBLIC_INTENTS.and(Intents.GROUP_INTENTS));
-            starter.run();
-            starter.setReconnect(true);
-            starter.registerListenerHost(onMessage);
-        }
+//        if (isEnable) {
+//            Starter starter = new Starter(appid, token, secret);
+//            if (isSandbox) {
+//                starter.getConfig().setSandbox(true);
+//            }
+//            starter.APPLICATION.logger.setOutFile(null);
+//            starter.getConfig().setCode(Intents.PUBLIC_INTENTS.and(Intents.GROUP_INTENTS));
+//            starter.run();
+//            starter.setReconnect(true);
+//            starter.registerListenerHost(onMessage);
+//        }
     }
 }

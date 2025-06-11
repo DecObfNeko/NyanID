@@ -30,7 +30,7 @@ public class BanUserList implements Serializable {
 
     private boolean isActive;
 
-    private int Type;  //1限制修改昵称//2限制从Oauth登录//3限制修改头像及头图//4限制上传配置文件
+    private int Type;  //1限制修改昵称//2限制从Oauth登录//3限制修改头像及头图//4限制上传配置文件//5没救了
 
     private LocalDateTime BanTime;
 

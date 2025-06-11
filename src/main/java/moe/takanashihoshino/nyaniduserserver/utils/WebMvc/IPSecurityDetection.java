@@ -8,7 +8,6 @@ import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
 import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrorCode;
 import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.OtherUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,8 +31,12 @@ public class IPSecurityDetection implements HandlerInterceptor {
     @Value("${NyanidSetting.TIME_FRAME_IN_MILLISECONDS}")
     private long TIME_FRAME_IN_MILLISECONDS; // 毫秒
 
-    @Autowired
-    private RedisService redisService;
+    private final RedisService redisService;
+
+    public IPSecurityDetection(RedisService redisService) {
+        this.redisService = redisService;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         String ip = getIpAddress(request);
@@ -43,7 +46,7 @@ public class IPSecurityDetection implements HandlerInterceptor {
             accessMap.put(ip, new AccessTime(currentTime, 0));
         } else {
             if (accessTime.requestCount >= MAX_REQUESTS_PER_SECOND) {
-                redisService.setValueWithExpiration(ip, 1, 5, TimeUnit.SECONDS);
+                redisService.setValueWithExpiration(ip, 1, 10, TimeUnit.SECONDS);
                 accessMap.remove(ip);
                 } else {
                     accessTime.requestCount++;
@@ -56,7 +59,7 @@ public class IPSecurityDetection implements HandlerInterceptor {
             PrintWriter out = response.getWriter();
             Error error = new Error();
             error.setStatus(ErrorCode.Dimples1337.getCode());
-            error.setError(ErrorCode.Dimples1337.getMessage());
+            error.setError("Your IP access frequency is too high and has been restricted from access.");
             error.setMessage("Zako~Your IP has been blocked MiaoWu~");
             error.setTimestamp(LocalDateTime.now());
             response.setContentType("application/json");
