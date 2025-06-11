@@ -1,8 +1,8 @@
 package moe.takanashihoshino.nyaniduserserver.utils;
 
 
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.Error;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.Ygg.ErrorResponse;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Ygg.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -21,7 +21,10 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(e.getMessage());
         errorResponse.setError("Bad Request");
         errorResponse.setTimestamp(LocalDateTime.now());
-        ErrorResponse error = new ErrorResponse(errorResponse.getError(),errorResponse.getMessage(),errorResponse.getTimestamp().toString());
+        ErrorResponse error = new ErrorResponse();
+        error.setError(errorResponse.getError());
+        error.setErrorMessage(errorResponse.getMessage());
+        error.setCause(errorResponse.getTimestamp().toString());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -32,7 +35,10 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(e.getMessage());
         errorResponse.setError("Internal Server Error");
         errorResponse.setTimestamp(LocalDateTime.now());
-        ErrorResponse error = new ErrorResponse(errorResponse.getError(),errorResponse.getMessage(),errorResponse.getTimestamp().toString());
+        ErrorResponse error = new ErrorResponse();
+        error.setError(errorResponse.getError());
+        error.setErrorMessage(errorResponse.getMessage());
+        error.setCause(errorResponse.getTimestamp().toString());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

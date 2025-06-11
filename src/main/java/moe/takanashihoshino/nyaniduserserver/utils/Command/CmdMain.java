@@ -2,11 +2,7 @@ package moe.takanashihoshino.nyaniduserserver.utils.Command;
 
 
 import jakarta.annotation.PostConstruct;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.HelloCommand;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.HelpCommand;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.RedisCommand;
-import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.StopCommand;
-import org.springframework.beans.factory.annotation.Autowired;
+import moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,13 +13,24 @@ import java.util.logging.Logger;
 @RestController
 public class CmdMain {
 
-    @Autowired
-    private RedisCommand redisCommand;
+
+    private final RedisCommand redisCommand;
+    private final UserManagerCommand userManagerCommand;
+    private final SystemctlCommand systemctlCommand;
+
+    private final Reload reload;
 
 
 
     @Value("${NyanidSetting.EnableCommand}")
     private boolean EnableCommand;
+
+    public CmdMain(RedisCommand redisCommand, UserManagerCommand userManagerCommand, SystemctlCommand systemctlCommand, Reload reload) {
+        this.redisCommand = redisCommand;
+        this.userManagerCommand = userManagerCommand;
+        this.systemctlCommand = systemctlCommand;
+        this.reload = reload;
+    }
 
     @PostConstruct
     public void run() {
@@ -34,7 +41,10 @@ public class CmdMain {
             commandManager.registerCommand(new HelloCommand());
             commandManager.registerCommand(new HelpCommand());
             commandManager.registerCommand(new StopCommand());
+            commandManager.registerCommand(systemctlCommand);
             commandManager.registerCommand(redisCommand);
+            commandManager.registerCommand(userManagerCommand);
+            commandManager.registerCommand(reload);
             //END Register
             Thread consoleThread = new Thread(new ConsoleInputHandler(commandManager));
             consoleThread.start();

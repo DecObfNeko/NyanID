@@ -1,6 +1,5 @@
 package moe.takanashihoshino.nyaniduserserver.utils.EmailHelper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+
+    private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -21,6 +20,10 @@ public class EmailService {
 
     @Value("${NyanidSetting.TeamName}")
     private String teamName;
+
+    public EmailService(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
 
     public void sendVerificationCode(String user, String code) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
@@ -74,6 +77,8 @@ public class EmailService {
         };
         javaMailSender.send(messagePreparator);
     }
+
+
 
     public void RegisterVerification(String user, String link) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {

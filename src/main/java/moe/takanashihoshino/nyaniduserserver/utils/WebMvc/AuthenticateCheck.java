@@ -3,12 +3,10 @@ package moe.takanashihoshino.nyaniduserserver.utils.WebMvc;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.Error;
-import moe.takanashihoshino.nyaniduserserver.ErrUtils.ErrorCode;
-import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.AccountsRepository;
-import moe.takanashihoshino.nyaniduserserver.SqlUtils.Repository.NyanIDuserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.Error;
+import moe.takanashihoshino.nyaniduserserver.utils.ErrUtils.ErrorCode;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.BanUserRepository;
+import moe.takanashihoshino.nyaniduserserver.utils.SqlUtils.Repository.UserDevicesRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -22,37 +20,31 @@ import java.util.Objects;
 @Component
 public class AuthenticateCheck implements HandlerInterceptor {
 
-    @Autowired
-    private NyanIDuserRepository nyanIDuserRepository;
 
-    @Autowired
-    private AccountsRepository accountsRepository;
+    private final BanUserRepository banUserRepository;
 
-    @Autowired
-    private RedisService redisService;
 
-    private String EventID = "Se1";
+    private final UserDevicesRepository userDevicesRepository;
+
+    public AuthenticateCheck(BanUserRepository banUserRepository, UserDevicesRepository userDevicesRepository) {
+        this.banUserRepository = banUserRepository;
+        this.userDevicesRepository = userDevicesRepository;
+    }
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String Authorization = request.getHeader("Authorization");
         String getEvent = request.getHeader("Event");
-        String session = request.getSession().getId();
-        String ip = request.getRemoteAddr();
         String RequestMode = request.getMethod();
         if (Authorization != null && getEvent != null){
             String Token = Authorization.replace("Bearer ", "").replace(" ", "");
-            if (nyanIDuserRepository.getAccount(Token) != null){
-                String uid = nyanIDuserRepository.getAccount(Token);
-                String ClientID =nyanIDuserRepository.getClienID(uid);
-                if (!accountsRepository.isBanned(uid)) {
+            if (userDevicesRepository.findUidByToken(Token) != null){
+                String uid = userDevicesRepository.findUidByToken(Token);
+                if (banUserRepository.findBanIDByUid(uid) == null) {
                     switch (getEvent) {
-                        case "Ua"://上传头像 PUT
+                        case "Ua"://上传 PUT
                             if (Objects.equals(RequestMode, "PUT")) {
-                                if (!CheckSession(uid)) {
-                                    addSession(session, uid, ClientID, ip);
-                                    break;
-                                }
                                 break;
                             } else {
                                 PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
@@ -60,10 +52,7 @@ public class AuthenticateCheck implements HandlerInterceptor {
                             }
                         case "Ud"://上传数据 POST
                             if (Objects.equals(RequestMode, "POST")) {
-                                if (!CheckSession(uid)) {
-                                    addSession(session, uid, ClientID, ip);
-                                    break;
-                                }
+
                                 break;
                             } else {
                                 PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
@@ -71,16 +60,25 @@ public class AuthenticateCheck implements HandlerInterceptor {
                             }
                         case "Gi"://获取信息 GET
                             if (Objects.equals(RequestMode, "GET")) {
-                                if (!CheckSession(uid)) {
-                                    addSession(session, uid, ClientID, ip);
-                                    break;
-                                }
                                 break;
                             } else {
                                 PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
                                 return false;
                             }
-
+                        case "ADMIN":
+                            if (Objects.equals(RequestMode, "POST")) {
+                                break;
+                            } else {
+                                PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
+                                return false;
+                            }
+                        case "De"://请求删除 GET
+                            if (Objects.equals(RequestMode, "DELETE")) {
+                                break;
+                            } else {
+                                PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Wrong action event MiaoWu~"), 403);
+                                return false;
+                            }
 
                         default:
                             PrintWriter(response, Err(ErrorCode.IllegalRequest.getCode(), ErrorCode.IllegalRequest.getMessage(), "Zako~Unknown action parameters MiaoWu~"), 403);
@@ -99,25 +97,6 @@ public class AuthenticateCheck implements HandlerInterceptor {
             PrintWriter(response,Err(ErrorCode.Unauthorized.getCode(),ErrorCode.Unauthorized.getMessage(),"Zako~Authentication failed, invalid token MiaoWu~"), 401);
             return false;
         }
-    }
-
-
-    public boolean CheckSession(String uid){
-        JSONObject e = new JSONObject();
-        e.put(EventID,uid);
-        return redisService.getValue(String.valueOf(e)) != null;
-    }
-
-    public void addSession(String session,String uid,String clientID,String ip){
-        JSONObject i = new JSONObject();
-        i.put(EventID,session);
-        i.put("ip",ip);
-        if (clientID != null) {
-            i.put("clientid", clientID);
-        }
-        JSONObject e = new JSONObject();
-        e.put(EventID,uid);
-        redisService.setValueWithExpiration(String.valueOf(e),String.valueOf(i),3,java.util.concurrent.TimeUnit.DAYS);
     }
 
     public void PrintWriter(HttpServletResponse response,Error error,int code) throws IOException {

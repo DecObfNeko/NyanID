@@ -4,4 +4,8 @@
 /config
 /Data
 /redis
+/plugins
 
+/nyacat.cloud.key
+/nyacat.cloud.crt
+/root_bundle.crt

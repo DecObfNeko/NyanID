@@ -1,9 +1,5 @@
 package moe.takanashihoshino.nyaniduserserver.utils.QQbotUtils.impl;
 
-import io.github.kloping.qqbot.api.message.MessageEvent;
-import io.github.kloping.qqbot.entities.ex.MessageAsyncBuilder;
-import io.github.kloping.qqbot.entities.qqpd.message.RawMessage;
-import io.github.kloping.qqbot.impl.ListenerHost;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -12,7 +8,7 @@ import java.util.stream.Collectors;
 
 
 @Component
-public class onMessage extends ListenerHost {
+public class onMessage  {//extends ListenerHost
 
     private static String[] processString(String originalData) {
         // 移除字符串两端的方括号
@@ -27,18 +23,18 @@ public class onMessage extends ListenerHost {
         // 将列表转换为数组
         return trimmedList.toArray(new String[0]);
     }
-    @EventReceiver
-    public void onEvent(MessageEvent event) {
-     RawMessage message = event.getRawMessage();
-        String[] processedData = processString(String.valueOf(message));
-        List<?> arrays = List.of(Arrays.stream(processedData).toArray());
-        System.out.println(String.valueOf(arrays.get(3)).replaceAll("content=","").replaceAll(",",""));
-        if (String.valueOf(arrays.get(3)).replaceAll("content=","").replaceAll(",","").equals("help")){
-            MessageAsyncBuilder builder = new MessageAsyncBuilder()
-                  .text("你好，我是nyanidbot，你可以发送help来获取帮助")
-                  .append(message.getContent());
-            event.send(builder.build());
-        }
+//    @EventReceiver
+//    public void onEvent(MessageEvent event) {
+//     RawMessage message = event.getRawMessage();
+//        String[] processedData = processString(String.valueOf(message));
+//        List<?> arrays = List.of(Arrays.stream(processedData).toArray());
+//        System.out.println(String.valueOf(arrays.get(3)).replaceAll("content=","").replaceAll(",",""));
+//        if (String.valueOf(arrays.get(3)).replaceAll("content=","").replaceAll(",","").equals("help")){
+//            MessageAsyncBuilder builder = new MessageAsyncBuilder()
+//                  .text("你好，我是nyanidbot，你可以发送help来获取帮助")
+//                  .append(message.getContent());
+//            event.send(builder.build());
+//        }
 
 //      if (Arrays.toString(processedData).isEmpty()){
 //          event.send("请输入内容");
@@ -48,5 +44,5 @@ public class onMessage extends ListenerHost {
 //                  .append(message.getContent());
 //          event.send(builder.build() );
 //      }
-    }
+//    }
 }

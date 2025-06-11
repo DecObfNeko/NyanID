@@ -1,8 +1,7 @@
 package moe.takanashihoshino.nyaniduserserver.utils.Command.CommandList;
 
-import moe.takanashihoshino.nyaniduserserver.RedisUtils.RedisService;
+import moe.takanashihoshino.nyaniduserserver.utils.RedisUtils.RedisService;
 import moe.takanashihoshino.nyaniduserserver.utils.Command.Command;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,9 +11,12 @@ import java.util.logging.Logger;
 @RestController
 public class RedisCommand implements Command {
 
-    @Autowired
-   private RedisService redisService;
 
+    private final RedisService redisService;
+
+    public RedisCommand(RedisService redisService) {
+        this.redisService = redisService;
+    }
 
     @Override
     public String getName() {
